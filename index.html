@@ -63,10 +63,10 @@
         if (child.name === 'mesh0') pointCloud0 = child;
         if (child.name === 'mesh1') pointCloud1 = child;
         if (child.name === 'mesh13') sphereMesh = child;
-        if (child.name === 'mesh2' || child.name === 'mesh4' || child.name === 'mesh6'|| child.name === 'mesh8'|| child.name === 'mesh9') {iceCrystal.push(child);}
-        if (child.name === 'mesh3' || child.name === 'mesh5' || child.name === 'mesh7'|| child.name === 'mesh10') {silicateCrystal.push(child);}
-        if (child.name === 'mesh10' ) {podtreesystems.push(child);}
-        if (child.name === 'mesh11' ) {podsystems.push(child);}
+        if (child.name === 'mesh4' || child.name === 'mesh6' || child.name === 'mesh8'|| child.name === 'mesh10'|| child.name === 'mesh11') {iceCrystal.push(child);}
+        if (child.name === 'mesh5' || child.name === 'mesh7' || child.name === 'mesh9'|| child.name === 'mesh12') {silicateCrystal.push(child);}
+        if (child.name === 'mesh2' ) {podtreesystems.push(child);}
+        if (child.name === 'mesh3' ) {podsystems.push(child);}
         
         console.log(`Mesh ${meshList.length - 1}:`, child.name || '(unnamed)', child);
       }
