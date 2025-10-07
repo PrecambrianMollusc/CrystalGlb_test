@@ -89,20 +89,20 @@
     sphereMesh.material.depthWrite = false;
     sphereMesh.material.needsUpdate = true;
     
-      podsystems.forEach(mesh => {
-        const materials = Array.isArray(mesh.material) ? mesh.material : [mesh.material];
-        materials.forEach(mat => {
-          mat.color = new THREE.Color(0xb87333);          // copper base
-          mat.emissive = new THREE.Color(0x552200);       // warm inner glow
-          mat.emissiveIntensity = 0.3;
-          mat.metalness = 0.6;                            // simulate metal surface
-          mat.roughness = 0.4;                            // slight polish
-          mat.transparent = true;
-          mat.opacity = 0.9;
-          mat.depthWrite = true;
-          mat.needsUpdate = true;
+       silicateCrystal.forEach(mesh => {
+          const materials = Array.isArray(mesh.material) ? mesh.material : [mesh.material];
+          materials.forEach(mat => {
+            mat.color = new THREE.Color(0x555555);           // slate gray base
+            mat.emissive = new THREE.Color(0x111111);        // subtle inner depth
+            mat.emissiveIntensity = 0.2;
+            mat.metalness = 0.8;                             // high metal content
+            mat.roughness = 0.3;                             // polished but not mirror-like
+            mat.transparent = false;
+            mat.opacity = 1.0;
+            mat.depthWrite = true;
+            mat.needsUpdate = true;
+          });
         });
-      });
 
       iceCrystal.forEach(mesh => {
           const materials = Array.isArray(mesh.material) ? mesh.material : [mesh.material];
