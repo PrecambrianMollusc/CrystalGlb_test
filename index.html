@@ -33,6 +33,7 @@
     const directionalLight = new THREE.DirectionalLight(0xffffff, 0.8);
     directionalLight.position.set(1, 1, 1);
     scene.add(directionalLight);
+  console.log('Attempting to load GLTF...');
 
     const loader = new GLTFLoader();
     loader.load('https://precambrianmollusc.github.io/CrystalGlb_test/visualization.gltf', gltf => {
