@@ -16,6 +16,7 @@
 
     const scene = new THREE.Scene();
     scene.background = new THREE.Color(0x111111);
+    scene.add(new THREE.AxesHelper(1000));
 
     const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 10000);
     camera.position.set(0, 0, 1000);
@@ -35,10 +36,23 @@
 
     const loader = new GLTFLoader();
     loader.load('https://precambrianmollusc.github.io/CrystalGlb_test/visualization.gltf', gltf => {
-      scene.add(gltf.scene);
-    }, undefined, error => {
-      console.error('GLTF load error:', error);
-    });
+    const model = gltf.scene;
+    scene.add(model);
+
+  // Log model structure
+  console.log('GLTF loaded:', model);
+
+  // Add bounding box helper
+  const box = new THREE.Box3().setFromObject(model);
+  const size = box.getSize(new THREE.Vector3());
+  const center = box.getCenter(new THREE.Vector3());
+  console.log('Bounding box size:', size);
+  console.log('Bounding box center:', center);
+
+  // Reposition camera to center on model
+  camera.position.set(center.x, center.y, center.z + size.length());
+  controls.target.copy(center);
+});
 
     function animate() {
       requestAnimationFrame(animate);
