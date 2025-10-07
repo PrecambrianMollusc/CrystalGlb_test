@@ -87,7 +87,32 @@
       label.appendChild(document.createTextNode(mesh.name || `Mesh ${index}`));
       ui.appendChild(label);
     });
-
+    
+    // Opacity slider for mesh 13
+    const opacityLabel = document.createElement('label');
+    opacityLabel.style.display = 'block';
+    opacityLabel.style.marginTop = '10px';
+    opacityLabel.textContent = 'Sphere Opacity';
+    
+    const opacitySlider = document.createElement('input');
+    opacitySlider.type = 'range';
+    opacitySlider.min = '0';
+    opacitySlider.max = '1';
+    opacitySlider.step = '0.01';
+    opacitySlider.value = '0.3';
+    
+    opacitySlider.addEventListener('input', () => {
+      const sphere = meshList[13];
+      if (sphere && sphere.material) {
+        sphere.material.transparent = true;
+        sphere.material.opacity = parseFloat(opacitySlider.value);
+        sphere.material.depthWrite = false;
+        sphere.material.needsUpdate = true;
+      }
+    });
+    
+    ui.appendChild(opacityLabel);
+    ui.appendChild(opacitySlider);
 
     
     const box = new THREE.Box3().setFromObject(model);
