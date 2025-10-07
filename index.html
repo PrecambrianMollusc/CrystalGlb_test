@@ -10,10 +10,17 @@
 </head>
 <body>
   <script type="module">
-    import * as THREE from 'https://unpkg.com/three@0.154.0/build/three.module.js';
-    import { GLTFLoader } from 'https://unpkg.com/three@0.154.0/examples/jsm/loaders/GLTFLoader.js';
-    import { OrbitControls } from 'https://unpkg.com/three@0.154.0/examples/jsm/controls/OrbitControls.js';
 
+    console.log('Script started');
+
+    import * as THREE from 'https://unpkg.com/three@0.154.0/build/three.module.js';
+    console.log('import as three done');
+
+    import { GLTFLoader } from 'https://unpkg.com/three@0.154.0/examples/jsm/loaders/GLTFLoader.js';
+    console.log('import gltf loader done');
+    import { OrbitControls } from 'https://unpkg.com/three@0.154.0/examples/jsm/controls/OrbitControls.js';
+    console.log('import orbit controls done  done');
+    
     const scene = new THREE.Scene();
     scene.background = new THREE.Color(0x111111);
     scene.add(new THREE.AxesHelper(1000));
