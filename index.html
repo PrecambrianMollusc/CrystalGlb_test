@@ -43,13 +43,13 @@
   console.log('Attempting to load GLTF...');
   
   let meshList = [];
-  let sphereMesh = null; // 👈 this will hold meshList[13] once loaded
-  let pointCloud0 = null;
-  let pointCloud1 = null;
-  let silicateCrystal = null;
-  let iceCrystal = null;
-  let podsystems = null;
-  let podtreesystems = null;
+  let sphereMesh = []; // 👈 this will hold meshList[13] once loaded
+  let pointCloud0 = [];
+  let pointCloud1 = [];
+  let silicateCrystal = [];
+  let iceCrystal = [];
+  let podsystems = [];
+  let podtreesystems = [];
   
   const loader = new GLTFLoader();
   loader.load('https://precambrianmollusc.github.io/CrystalGlb_test/visualization.gltf', gltf => {
