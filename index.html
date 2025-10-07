@@ -103,6 +103,7 @@
     
     opacitySlider.addEventListener('input', () => {
       const sphere = meshList[13];
+      console.log(meshList[13].material);
       if (sphere && sphere.material) {
         sphere.material.transparent = true;
         sphere.material.opacity = parseFloat(opacitySlider.value);
