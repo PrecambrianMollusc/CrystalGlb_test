@@ -41,16 +41,14 @@
   scene.add(directionalLight);
 
   console.log('Attempting to load GLTF...');
-
+  
+  let meshList = [];
   const loader = new GLTFLoader();
   loader.load('https://precambrianmollusc.github.io/CrystalGlb_test/visualization.gltf', gltf => {
     const model = gltf.scene;
     scene.add(model);
-
     console.log('GLTF loaded:', model);
-      
-    let meshList = [];
-
+     
     model.traverse(child => {
       if (child.isMesh) {
        meshList.push(child);
