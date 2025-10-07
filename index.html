@@ -11,8 +11,11 @@
 <body>
 <script type="module">
   import * as THREE from 'https://unpkg.com/three@0.154.0/build/three.module.js';
-  import { GLTFLoader } from 'https://cdn.jsdelivr.net/gh/mrdoob/three.js@r154/examples/jsm/loaders/GLTFLoader.js';
-  import { OrbitControls } from 'https://cdn.jsdelivr.net/gh/mrdoob/three.js@r154/examples/jsm/controls/OrbitControls.js';
+  import { GLTFLoader } from './GLTFLoader.js';
+  import { OrbitControls } from './OrbitControls.js';
+  
+  console.log('THREE version:', THREE.REVISION);
+  console.log('GLTFLoader loaded');
 
   console.log('Script started');
   console.log('Imports done');
