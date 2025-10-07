@@ -9,71 +9,67 @@
   </style>
 </head>
 <body>
-  <script type="module">
+<script type="module">
+  import * as THREE from 'https://unpkg.com/three@0.154.0/build/three.module.js';
+  import { GLTFLoader } from 'https://unpkg.com/three@0.154.0/examples/jsm/loaders/GLTFLoader.js';
+  import { OrbitControls } from 'https://unpkg.com/three@0.154.0/examples/jsm/controls/OrbitControls.js';
 
-    console.log('Script started');
+  console.log('Script started');
+  console.log('Imports done');
 
-    import * as THREE from 'https://unpkg.com/three@0.154.0/build/three.module.js';
-    console.log('import as three done');
+  const scene = new THREE.Scene();
+  scene.background = new THREE.Color(0x111111);
+  scene.add(new THREE.AxesHelper(1000));
 
-    import { GLTFLoader } from 'https://unpkg.com/three@0.154.0/examples/jsm/loaders/GLTFLoader.js';
-    console.log('import gltf loader done');
-    import { OrbitControls } from 'https://unpkg.com/three@0.154.0/examples/jsm/controls/OrbitControls.js';
-    console.log('import orbit controls done  done');
-    
-    const scene = new THREE.Scene();
-    scene.background = new THREE.Color(0x111111);
-    scene.add(new THREE.AxesHelper(1000));
+  const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 10000);
+  camera.position.set(0, 0, 1000);
 
-    const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 10000);
-    camera.position.set(0, 0, 1000);
+  const renderer = new THREE.WebGLRenderer({ antialias: true });
+  renderer.setSize(window.innerWidth, window.innerHeight);
+  document.body.appendChild(renderer.domElement);
 
-    const renderer = new THREE.WebGLRenderer({ antialias: true });
-    renderer.setSize(window.innerWidth, window.innerHeight);
-    document.body.appendChild(renderer.domElement);
+  const controls = new OrbitControls(camera, renderer.domElement);
+  controls.enableDamping = true;
 
-    const controls = new OrbitControls(camera, renderer.domElement);
-    controls.enableDamping = true;
+  const ambientLight = new THREE.AmbientLight(0xffffff, 0.6);
+  scene.add(ambientLight);
+  const directionalLight = new THREE.DirectionalLight(0xffffff, 0.8);
+  directionalLight.position.set(1, 1, 1);
+  scene.add(directionalLight);
 
-    const ambientLight = new THREE.AmbientLight(0xffffff, 0.6);
-    scene.add(ambientLight);
-    const directionalLight = new THREE.DirectionalLight(0xffffff, 0.8);
-    directionalLight.position.set(1, 1, 1);
-    scene.add(directionalLight);
   console.log('Attempting to load GLTF...');
 
-    const loader = new GLTFLoader();
-    loader.load('https://precambrianmollusc.github.io/CrystalGlb_test/visualization.gltf', gltf => {
+  const loader = new GLTFLoader();
+  loader.load('https://precambrianmollusc.github.io/CrystalGlb_test/visualization.gltf', gltf => {
     const model = gltf.scene;
     scene.add(model);
 
-  // Log model structure
-  console.log('GLTF loaded:', model);
+    console.log('GLTF loaded:', model);
 
-  // Add bounding box helper
-  const box = new THREE.Box3().setFromObject(model);
-  const size = box.getSize(new THREE.Vector3());
-  const center = box.getCenter(new THREE.Vector3());
-  console.log('Bounding box size:', size);
-  console.log('Bounding box center:', center);
+    const box = new THREE.Box3().setFromObject(model);
+    const size = box.getSize(new THREE.Vector3());
+    const center = box.getCenter(new THREE.Vector3());
+    console.log('Bounding box size:', size);
+    console.log('Bounding box center:', center);
 
-  // Reposition camera to center on model
-  camera.position.set(center.x, center.y, center.z + size.length());
-  controls.target.copy(center);
-});
+    camera.position.set(center.x, center.y, center.z + size.length());
+    controls.target.copy(center);
+  }, undefined, error => {
+    console.error('GLTF load error:', error);
+  });
 
-    function animate() {
-      requestAnimationFrame(animate);
-      controls.update();
-      renderer.render(scene, camera);
-    }
-    animate();
+  function animate() {
+    requestAnimationFrame(animate);
+    controls.update();
+    renderer.render(scene, camera);
+  }
+  animate();
 
-    window.addEventListener('resize', () => {
-      camera.aspect = window.innerWidth / window.innerHeight;
-      camera.updateProjectionMatrix();
-      renderer.setSize(window.innerWidth, window.innerHeight);
-    });
-  </script>
+  window.addEventListener('resize', () => {
+    camera.aspect = window.innerWidth / window.innerHeight;
+    camera.updateProjectionMatrix();
+    renderer.setSize(window.innerWidth, window.innerHeight);
+  });
+</script>
 </body>
 </html>
