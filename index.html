@@ -44,6 +44,12 @@
   
   let meshList = [];
   let sphereMesh = null; // 👈 this will hold meshList[13] once loaded
+  let pointCloud0 = null;
+  let pointCloud1 = null;
+  let silicateCrystal = null;
+  let iceCrystal = null;
+  let podsystems = null;
+  let podtreesystems = null;
   
   const loader = new GLTFLoader();
   loader.load('https://precambrianmollusc.github.io/CrystalGlb_test/visualization.gltf', gltf => {
@@ -52,8 +58,16 @@
     console.log('GLTF loaded:', model);
          
     model.traverse(child => {
-      if (child.isMesh || child.type === 'Points') {
+       if (child.isMesh || child.type === 'Points') {
         meshList.push(child);
+        if (child.name === 'mesh0') pointCloud0 = child;
+        if (child.name === 'mesh1') pointCloud1 = child;
+        if (child.name === 'mesh13') sphereMesh = child;
+        if (child.name === 'mesh2' || child.name === 'mesh4' || child.name === 'mesh6'|| child.name === 'mesh8'|| child.name === 'mesh9') {iceCrystal.push(child);}
+        if (child.name === 'mesh3' || child.name === 'mesh5' || child.name === 'mesh7'|| child.name === 'mesh10') {silicateCrystal.push(child);}
+        if (child.name === 'mesh10' ) {podtreesystems.push(child);}
+        if (child.name === 'mesh11' ) {podsystems.push(child);}
+        
         console.log(`Mesh ${meshList.length - 1}:`, child.name || '(unnamed)', child);
       }
     });
@@ -89,25 +103,38 @@
     ui.style.zIndex = '10';
     document.body.appendChild(ui);
     
-    // Add a checkbox for each mesh
-    meshList.forEach((mesh, index) => {
-      const label = document.createElement('label');
-      label.style.display = 'block';
-      label.style.marginBottom = '4px';
-    
-      const checkbox = document.createElement('input');
-      checkbox.type = 'checkbox';
-      checkbox.checked = true;
-      checkbox.style.marginRight = '6px';
-    
-      checkbox.addEventListener('change', () => {
-        toggleMeshByIndex(index, checkbox.checked);
-      });
-    
-      label.appendChild(checkbox);
-      label.appendChild(document.createTextNode(mesh.name || `Mesh ${index}`));
-      ui.appendChild(label);
-    });
+      // Add a toggle for each mesh group
+      function addGroupToggle(groupArray, labelText) {
+        const label = document.createElement('label');
+        label.style.display = 'block';
+        label.style.marginTop = '10px';
+      
+        const checkbox = document.createElement('input');
+        checkbox.type = 'checkbox';
+        checkbox.checked = true;
+        checkbox.style.marginRight = '6px';
+      
+        checkbox.addEventListener('change', () => {
+          groupArray.forEach(mesh => {
+            mesh.visible = checkbox.checked;
+          });
+          console.log(`${labelText} visibility set to`, checkbox.checked);
+        });
+      
+        label.appendChild(checkbox);
+        label.appendChild(document.createTextNode(labelText));
+        ui.appendChild(label);
+      }
+      
+      // Add toggles for each defined group
+      addGroupToggle(iceCrystal, 'Ice Crystal Group');
+      addGroupToggle(silicateCrystal, 'Silicate Crystal Group');
+      addGroupToggle(podtreesystems, 'Pod Tree Systems');
+      addGroupToggle(podsystems, 'Pod Systems');
+
+
+
+
     
     // Opacity slider for mesh 13
     const opacityLabel = document.createElement('label');
@@ -141,8 +168,7 @@
 
     ui.appendChild(opacityLabel);
     ui.appendChild(opacitySlider);
-
-    
+   
     const box = new THREE.Box3().setFromObject(model);
     const size = box.getSize(new THREE.Vector3());
     const center = box.getCenter(new THREE.Vector3());
