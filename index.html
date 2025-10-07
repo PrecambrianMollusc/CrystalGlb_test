@@ -34,7 +34,7 @@
     scene.add(directionalLight);
 
     const loader = new GLTFLoader();
-    loader.load('visualization.gltf', gltf => {
+    loader.load('./visualization.gltf', gltf => {
       scene.add(gltf.scene);
     }, undefined, error => {
       console.error('GLTF load error:', error);
