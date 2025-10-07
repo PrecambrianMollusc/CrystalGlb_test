@@ -85,7 +85,9 @@
     pointCloud1.material.needsUpdate = true;
     
     sphereMesh.material.opacity = 0.3;
-
+    sphereMesh.material.transparent = true;
+    sphereMesh.material.depthWrite = false;
+    sphereMesh.material.needsUpdate = true;
     
     // Create a UI container
     const ui = document.createElement('div');
