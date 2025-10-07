@@ -49,12 +49,14 @@
 
     console.log('GLTF loaded:', model);
       
-    // 🔍 Traverse and log all mesh names
+    let meshList = [];
+
     model.traverse(child => {
       if (child.isMesh) {
-        console.log('Mesh found:', child.name);
-      }
-    });
+       meshList.push(child);
+       console.log(`Mesh ${meshList.length - 1}:`, child.name || '(unnamed)', child);
+        }
+     });
 
     const box = new THREE.Box3().setFromObject(model);
     const size = box.getSize(new THREE.Vector3());
@@ -74,6 +76,13 @@
     renderer.render(scene, camera);
   }
   animate();
+  
+  function toggleMeshByIndex(index, visible) {
+    if (meshList[index]) {
+      meshList[index].visible = visible;
+      console.log(`Mesh ${index} visibility set to`, visible);
+    }
+  }
 
   window.addEventListener('resize', () => {
     camera.aspect = window.innerWidth / window.innerHeight;
