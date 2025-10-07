@@ -50,13 +50,14 @@
     const model = gltf.scene;
     scene.add(model);
     console.log('GLTF loaded:', model);
-     
+         
     model.traverse(child => {
-      if (child.isMesh) {
-       meshList.push(child);
-       console.log(`Mesh ${meshList.length - 1}:`, child.name || '(unnamed)', child);
-        }
-     });
+      if (child.isMesh || child.type === 'Points') {
+        meshList.push(child);
+        console.log(`Mesh ${meshList.length - 1}:`, child.name || '(unnamed)', child);
+      }
+    });
+    
 
     console.log('Total meshes found:', meshList.length);
     
