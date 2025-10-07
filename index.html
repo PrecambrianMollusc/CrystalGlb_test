@@ -48,6 +48,13 @@
     scene.add(model);
 
     console.log('GLTF loaded:', model);
+      
+    // 🔍 Traverse and log all mesh names
+    model.traverse(child => {
+      if (child.isMesh) {
+        console.log('Mesh found:', child.name);
+      }
+    });
 
     const box = new THREE.Box3().setFromObject(model);
     const size = box.getSize(new THREE.Vector3());
