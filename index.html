@@ -102,16 +102,24 @@
     opacitySlider.value = '0.3';
     
     opacitySlider.addEventListener('input', () => {
-      const sphere = meshList[13];
-      console.log(meshList[13].material);
-      if (sphere && sphere.material) {
-        sphere.material.transparent = true;
-        sphere.material.opacity = parseFloat(opacitySlider.value);
-        sphere.material.depthWrite = false;
-        sphere.material.needsUpdate = true;
+      const value = parseFloat(opacitySlider.value);
+    
+      // Wait until meshList[13] is defined
+      if (meshList.length > 13 && meshList[13]) {
+        const sphere = meshList[13];
+        const materials = Array.isArray(sphere.material) ? sphere.material : [sphere.material];
+    
+        materials.forEach(mat => {
+          mat.transparent = true;
+          mat.opacity = value;
+          mat.depthWrite = false;
+          mat.needsUpdate = true;
+        });
+      } else {
+        console.warn('Sphere mesh not yet available');
       }
     });
-    
+
     ui.appendChild(opacityLabel);
     ui.appendChild(opacitySlider);
 
