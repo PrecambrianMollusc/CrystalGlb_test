@@ -34,7 +34,7 @@
     scene.add(directionalLight);
 
     const loader = new GLTFLoader();
-    loader.load('./visualization.gltf', gltf => {
+    loader.load('https://precambrianmollusc.github.io/CrystalGlb_test/visualization.gltf', gltf => {
       scene.add(gltf.scene);
     }, undefined, error => {
       console.error('GLTF load error:', error);
