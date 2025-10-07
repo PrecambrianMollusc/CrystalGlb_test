@@ -89,6 +89,17 @@
     sphereMesh.material.depthWrite = false;
     sphereMesh.material.needsUpdate = true;
     
+    silicateCrystal.forEach(mesh => {
+        const materials = Array.isArray(mesh.material) ? mesh.material : [mesh.material];
+        materials.forEach(mat => {
+          mat.emissive = new THREE.Color(0x3366ff);       // soft blue glow
+          mat.emissiveIntensity = 0.5;                    // tweak for brightness
+          mat.transparent = true;
+          mat.opacity = 0.6;                              // optional: soften surface
+          mat.depthWrite = false;
+          mat.needsUpdate = true;
+        });
+      });
     // Create a UI container
     const ui = document.createElement('div');
     ui.style.position = 'absolute';
