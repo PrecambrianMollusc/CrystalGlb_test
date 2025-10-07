@@ -60,9 +60,23 @@
     
 
     console.log('Total meshes found:', meshList.length);
-    
+   
     sphereMesh = meshList.find(mesh => mesh.name === 'mesh13');
+    const pointCloud0 = meshList.find(obj => obj.name === 'mesh0');
+    const pointCloud1 = meshList.find(obj => obj.name === 'mesh1');
 
+    pointCloud0.material.size = 2.0; // make points larger
+    pointCloud0.material.opacity = 0.5;
+    pointCloud0.material.transparent = true;
+    pointCloud0.material.needsUpdate = true;
+    
+    pointCloud1.material.size = 1.5;
+    pointCloud1.material.opacity = 0.3;
+    pointCloud1.material.transparent = true;
+    pointCloud1.material.needsUpdate = true;
+    
+
+    
     // Create a UI container
     const ui = document.createElement('div');
     ui.style.position = 'absolute';
