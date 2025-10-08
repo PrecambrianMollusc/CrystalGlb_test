@@ -270,14 +270,14 @@
           const labelX = createAxisLabelMesh('Galactic X', new THREE.Vector3(min.x + offset, min.y, min.z), new THREE.Euler(0, 0, 0));
           const labelY = createAxisLabelMesh('Galactic Y', new THREE.Vector3(min.x, min.y + offset, min.z), new THREE.Euler(0, 0, Math.PI / 2));
           const labelZ = createAxisLabelMesh('Galactic Z', new THREE.Vector3(min.x, min.y, min.z + offset), new THREE.Euler( 0,  - Math.PI / 2, 0));        
-          labelX.position.set(min.x + offset, min.y, min.z); // along +X
-          labelY.position.set(min.x, min.y + offset, min.z); // along +Y
-          labelZ.position.set(min.x, min.y, min.z + offset); // along +Z
+          //labelX.position.set(min.x + offset, min.y, min.z); // along +X
+          //labelY.position.set(min.x, min.y + offset, min.z); // along +Y
+          //labelZ.position.set(min.x, min.y, min.z + offset); // along +Z
      
           // rotate along axis 
-          labelX.rotation.set(0, 0, 0); // flat, facing along X
-          labelY.rotation.set(0, 0, Math.PI / 2); // rotate around Z to align with Y
-          labelZ.rotation.set(Math.PI / 2, 0, 0); // rotate around X to align with Z
+          //labelX.rotation.set(0, 0, 0); // flat, facing along X
+          //labelY.rotation.set(0, 0, Math.PI / 2); // rotate around Z to align with Y
+          //labelZ.rotation.set(Math.PI / 2, 0, 0); // rotate around X to align with Z
               
           const labelScale = size.length() * 0.002; // 20% of diagonal length
           labelX.scale.set(labelScale, labelScale * 0.5, 1);
