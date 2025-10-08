@@ -106,28 +106,44 @@
       PodSystems: true
   };  
   
+  let activeState = 'before'; // default
+  
   function toggleMaster(state) {
-      activeState = state;
-    
-      const showBefore = (state === 'before');
-    
-      const meshGroups = showBefore ? beforeMeshes : afterMeshes;
-    
-      Object.entries(meshGroups).forEach(([groupName, groupMeshes]) => {
-        const isEnabled = subgroupStates[groupName];
-        groupMeshes.forEach(mesh => {
-          mesh.visible = isEnabled;
-        });
-      });
-    
-      // Hide the opposite state completely
-      const oppositeGroups = showBefore ? afterMeshes : beforeMeshes;
-      Object.values(oppositeGroups).forEach(group => {
-        group.forEach(mesh => mesh.visible = false);
-      });
+    activeState = state;
+    updateVisibility();
   }
   
-  function addGroupToggle(groupArray, labelText) {
+  function updateVisibility() {
+    Object.keys(subgroupStates).forEach(group => {
+      const show = subgroupStates[group];
+      const beforeGroup = beforeMeshes[group] || [];
+      const afterGroup = afterMeshes[group] || [];
+  
+      beforeGroup.forEach(mesh => mesh.visible = (activeState === 'before' && show));
+      afterGroup.forEach(mesh => mesh.visible = (activeState === 'after' && show));
+    });
+  }
+    
+  // global state
+    let activeState = 'before'; // 'before' or 'after'
+    const subgroupStates = {};   // filled by addGroupToggle when creating subgroup checkboxes
+    
+    // call this to refresh what should be visible based on activeState and subgroupStates
+    function updateVisibility() {
+      Object.keys(subgroupStates).forEach(groupName => {
+        const enabled = !!subgroupStates[groupName];
+        const beforeGroup = beforeMeshes[groupName] || [];
+        const afterGroup  = afterMeshes[groupName]  || [];
+    
+        beforeGroup.forEach(m => m.visible = (activeState === 'before' && enabled));
+        afterGroup.forEach(m  => m.visible = (activeState === 'after'  && enabled));
+      });
+    }
+
+  
+  // enhanced addGroupToggle: reuse for both subgroup and master checkbox
+  // If isMaster is true, labelText is used as the master label and groupArray is ignored.
+  function addGroupToggle(groupArray, labelText, isMaster = false, groupNameForState = null) {
     const label = document.createElement('label');
     label.style.display = 'block';
     label.style.marginTop = '10px';
@@ -137,29 +153,30 @@
     checkbox.checked = true;
     checkbox.style.marginRight = '6px';
   
-    checkbox.addEventListener('change', () => {
-      subgroupStates[labelText] = checkbox.checked;
-      groupArray.forEach(mesh => {
-        if (mesh.visible || activeState === 'before' || activeState === 'after') {
-          mesh.visible = checkbox.checked;
-        }
+    // If this is a subgroup checkbox we register it in subgroupStates
+    if (!isMaster) {
+      const groupKey = groupNameForState || labelText;
+      subgroupStates[groupKey] = true;
+  
+      checkbox.addEventListener('change', () => {
+        subgroupStates[groupKey] = checkbox.checked;
+        updateVisibility();
       });
-      console.log(`${labelText} visibility set to`, checkbox.checked);
-    });
+  
+      // when created, don't immediately toggle meshes directly; updateVisibility governs visibility
+    } else {
+      // Master checkbox: checked => before, unchecked => after
+      checkbox.addEventListener('change', (e) => {
+        activeState = e.target.checked ? 'before' : 'after';
+        updateVisibility();
+      });
+    }
   
     label.appendChild(checkbox);
     label.appendChild(document.createTextNode(labelText));
     ui.appendChild(label);
   }
-  
 
-  // toggle mesh   
-    function toggleMeshByIndex(index, visible) {
-        if (meshList[index]) {
-          meshList[index].visible = visible;
-          console.log(`Mesh ${index} visibility set to`, visible);
-        }
-    }
     
   //set up import of model 
   let meshList = [];
@@ -176,8 +193,6 @@
   let after_iceCrystal = [];
   let after_podsystems = [];
   let after_podtreesystems = [];
-  
-  let activeState = 'before'; // or 'after'
   
   // load the gtlf file 
   const loader = new GLTFLoader();
@@ -450,17 +465,20 @@
           );
           
           scene.add(arrowX, arrowY, arrowZ);
-      // Master toggles
-      addGroupToggle(Object.values(beforeMeshes).flat(), 'Before State');
-      addGroupToggle(Object.values(afterMeshes).flat(), 'After State');
-      
-      // Subgroup toggles
-      addGroupToggle(beforeMeshes.AllSystems.concat(afterMeshes.AllSystems), 'All Systems');
-      addGroupToggle(beforeMeshes.Criteria.concat(afterMeshes.Criteria), 'Criteria');
-      addGroupToggle(beforeMeshes.IceCrystal.concat(afterMeshes.IceCrystal), 'Ice Crystals');
-      addGroupToggle(beforeMeshes.SilicateCrystal.concat(afterMeshes.SilicateCrystal), 'Silicate Crystals');
-      addGroupToggle(beforeMeshes.PodTrees.concat(afterMeshes.PodTrees), 'Pod Trees');
-      addGroupToggle(beforeMeshes.PodSystems.concat(afterMeshes.PodSystems), 'Pod Systems');
+          // Master checkbox that looks the same as other checkboxes
+          addGroupToggle(null, 'Show Before State', true);
+          
+          // Subgroup checkboxes (reuse your existing arrays)
+          addGroupToggle(beforeMeshes.AllSystems.concat(afterMeshes.AllSystems), 'All Systems', false, 'AllSystems');
+          addGroupToggle(beforeMeshes.Criteria.concat(afterMeshes.Criteria), 'Criteria', false, 'Criteria');
+          addGroupToggle(beforeMeshes.IceCrystal.concat(afterMeshes.IceCrystal), 'Ice Crystals', false, 'IceCrystal');
+          addGroupToggle(beforeMeshes.SilicateCrystal.concat(afterMeshes.SilicateCrystal), 'Silicate Crystals', false, 'SilicateCrystal');
+          addGroupToggle(beforeMeshes.PodTrees.concat(afterMeshes.PodTrees), 'Pod Trees', false, 'PodTrees');
+          addGroupToggle(beforeMeshes.PodSystems.concat(afterMeshes.PodSystems), 'Pod Systems', false, 'PodSystems');
+          
+          // initialize visibility to match initial master checkbox state
+          updateVisibility();
+          
 
     
       // Add toggles for each defined group
