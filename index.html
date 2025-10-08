@@ -79,6 +79,11 @@
       // 🔍 Traverse and log all scene objects
   scene.traverse(obj => {
     console.log(`Object: ${obj.type}, name: ${obj.name || '(unnamed)'}, visible: ${obj.visible}`);
+     if (obj.name === 'mesh14' && obj.type === 'LineSegments') {
+      obj.visible = false; // or scene.remove(obj);
+      console.log('🔧 Hiding PyVista bounding box mesh14');
+    }
+
   });
 
          
