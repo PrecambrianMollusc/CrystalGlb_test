@@ -202,51 +202,23 @@
 
   });
     
-  // Traverse the child looking for mesh and points so we can put into groups - at some point need to figure naming in the python export       
     model.traverse(child => {
-       if (child.isMesh || child.type === 'Points') {
-        meshList.push(child);
-        if (child.name === 'mesh0') before_allSystems = child;
-        if (child.name === 'mesh1') after_allSystems = child;
-        if (child.name === 'mesh2') before_criteria = child;
-        if (child.name === 'mesh3') after_criteria = child;
-        if (child.name === 'mesh4' ) {before_podtreesystems.push(child);}
-        if (child.name === 'mesh5' ) {before_podsystems.push(child);}
-        if (child.name === 'mesh6' ) {after_podtreesystems.push(child);}
-        if (child.name === 'mesh7' ) {after_podsystems.push(child);}
-        if (child.name === 'mesh8' || child.name === 'mesh9' || child.name === 'mesh10'|| child.name === 'mesh12'|| child.name === 'mesh13') {before_iceCrystal.push(child);}
-        if (child.name === 'mesh11' || child.name === 'mesh14' ) {before_silicateCrystal.push(child);}
-        if (child.name === 'mesh15' || child.name === 'mesh17' || child.name === 'mesh19'|| child.name === 'mesh21'|| child.name === 'mesh22') {after_iceCrystal.push(child);}
-        if (child.name === 'mesh16' || child.name === 'mesh18'|| child.name === 'mesh20'|| child.name === 'mesh23' ) {after_silicateCrystal.push(child);}
-        if (child.name === 'mesh24') sphereMesh = child;
-        
-        console.log(`Mesh ${meshList.length - 1}:`, child.name || '(unnamed)', child);
-      }
+      if (!(child.isMesh || child.type === 'Points')) return;
+      if (child.name === 'mesh0') beforeMeshes.AllSystems.push(child);
+      if (child.name === 'mesh1') afterMeshes.AllSystems.push(child);
+      if (child.name === 'mesh2') beforeMeshes.Criteria.push(child);
+      if (child.name === 'mesh3') afterMeshes.Criteria.push(child);
+      if (child.name === 'mesh4') beforeMeshes.PodTrees.push(child);
+      if (child.name === 'mesh5') beforeMeshes.PodSystems.push(child);
+      if (child.name === 'mesh6') afterMeshes.PodTrees.push(child);
+      if (child.name === 'mesh7') afterMeshes.PodSystems.push(child);
+      if (['mesh8','mesh9','mesh10','mesh12','mesh13'].includes(child.name)) beforeMeshes.IceCrystal.push(child);
+      if (['mesh11','mesh14'].includes(child.name)) beforeMeshes.SilicateCrystal.push(child);
+      if (['mesh15','mesh17','mesh19','mesh21','mesh22'].includes(child.name)) afterMeshes.IceCrystal.push(child);
+      if (['mesh16','mesh18','mesh20','mesh23'].includes(child.name)) afterMeshes.SilicateCrystal.push(child);
+      if (child.name === 'mesh24') sphereMesh = child;
     });
-    
-    console.log('Total meshes found:', meshList.length);
-
-    // set up the meshes in groups 
-    // BEFORE meshes
-    beforeMeshes = {
-      AllSystems: [before_allSystems],
-      Criteria: [before_criteria],
-      IceCrystal: before_iceCrystal,
-      SilicateCrystal: before_silicateCrystal,
-      PodTrees: before_podtreesystems,
-      PodSystems: before_podsystems
-      };
-    
-    // AFTER meshes
-    afterMeshes = {
-      AllSystems: [after_allSystems],
-      Criteria: [after_criteria],
-      IceCrystal: after_iceCrystal,
-      SilicateCrystal: after_silicateCrystal,
-      PodTrees: after_podtreesystems,
-      PodSystems: after_podsystems
-      };
-
+  
     const subgroupStates = {
       AllSystems: true,
       Criteria: true,
