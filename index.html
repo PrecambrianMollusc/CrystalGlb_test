@@ -109,8 +109,8 @@
     pointCloud0.material.transparent = true;
     pointCloud0.material.needsUpdate = true;
     
-    pointCloud1.material.size = 2.5;
-    pointCloud1.material.opacity = 0.5;
+    pointCloud1.material.size = 5;
+    pointCloud1.material.opacity = 0.7;
     pointCloud1.material.transparent = true;
     pointCloud1.material.needsUpdate = true;
     
@@ -282,13 +282,13 @@
     const max = box.max;
         
     // X label at far right edge
-    labelX.position.set(min.x + 200, min.y-100, min.z-100);
+    labelX.position.set(min.x + 200, min.y, min.z);
     
     // Y label at top edge
-    labelY.position.set(min.x-100, min.y +200 , min.z-100);
+    labelY.position.set(min.x, min.y +200 , min.z);
     
     // Z label at front edge
-    labelZ.position.set(min.x-100, min.y-100, min.z +200);
+    labelZ.position.set(min.x, min.y, min.z );
     
     const labelScale = size.length() * 0.2; // 10% of diagonal length
     labelX.scale.set(labelScale, labelScale * 0.5, 1);
