@@ -107,23 +107,18 @@
   };  
   
   let activeState = 'before'; // default
+  const beforeMeshes = {
+    AllSystems: [], Criteria: [], IceCrystal: [], SilicateCrystal: [], PodTrees: [], PodSystems: []
+  };
+  const afterMeshes = {
+    AllSystems: [], Criteria: [], IceCrystal: [], SilicateCrystal: [], PodTrees: [], PodSystems: []
+  };
   
   function toggleMaster(state) {
     activeState = state;
     updateVisibility();
   }
   
-  function updateVisibility() {
-    Object.keys(subgroupStates).forEach(group => {
-      const show = subgroupStates[group];
-      const beforeGroup = beforeMeshes[group] || [];
-      const afterGroup = afterMeshes[group] || [];
-  
-      beforeGroup.forEach(mesh => mesh.visible = (activeState === 'before' && show));
-      afterGroup.forEach(mesh => mesh.visible = (activeState === 'after' && show));
-    });
-  }
-    
     // call this to refresh what should be visible based on activeState and subgroupStates
     function updateVisibility() {
       Object.keys(subgroupStates).forEach(groupName => {
@@ -233,7 +228,7 @@
 
     // set up the meshes in groups 
     // BEFORE meshes
-    const beforeMeshes = {
+    beforeMeshes = {
       AllSystems: [before_allSystems],
       Criteria: [before_criteria],
       IceCrystal: before_iceCrystal,
@@ -243,7 +238,7 @@
       };
     
     // AFTER meshes
-    const afterMeshes = {
+    afterMeshes = {
       AllSystems: [after_allSystems],
       Criteria: [after_criteria],
       IceCrystal: after_iceCrystal,
