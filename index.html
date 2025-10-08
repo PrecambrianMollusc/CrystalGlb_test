@@ -53,8 +53,9 @@
     document.body.appendChild(ui);
   
   // Functions and helpers
+  
   // Create axis label sprites
-    function createAxisLabel_old(text, position, color = 0xffffff) {
+  function createAxisLabel_old(text, position, color = 0xffffff) {
       const canvas = document.createElement('canvas');
       const context = canvas.getContext('2d');
       context.font = '24px sans-serif';
@@ -67,9 +68,9 @@
       sprite.position.copy(position);
       sprite.scale.set(100, 50, 1);
       return sprite;
-    }
-    
-    function createAxisLabelMesh(text, position, rotation, color = 0xffffff) {
+  }
+     
+  function createAxisLabelMesh(text, position, rotation, color = 0xffffff) {
       const canvas = document.createElement('canvas');
       canvas.width = 256;
       canvas.height = 64;
@@ -87,37 +88,60 @@
         transparent: true,
         side: THREE.DoubleSide,
         color,
-      });
+  });
     
       const geometry = new THREE.PlaneGeometry(100, 40);
       const mesh = new THREE.Mesh(geometry, material);
       mesh.position.copy(position);
       mesh.rotation.set(rotation.x, rotation.y, rotation.z);
       return mesh;
-    }
+  }
     
-    // funtions Add a toggle for each mesh group
-    function addGroupToggle(groupArray, labelText) {
-        const label = document.createElement('label');
-        label.style.display = 'block';
-        label.style.marginTop = '10px';
-      
-        const checkbox = document.createElement('input');
-        checkbox.type = 'checkbox';
-        checkbox.checked = true;
-        checkbox.style.marginRight = '6px';
-      
-        checkbox.addEventListener('change', () => {
-          groupArray.forEach(mesh => {
-            mesh.visible = checkbox.checked;
-          });
-          console.log(`${labelText} visibility set to`, checkbox.checked);
-        });
-      
-        label.appendChild(checkbox);
-        label.appendChild(document.createTextNode(labelText));
-        ui.appendChild(label);
+  function toggleMaster(state) {
+    activeState = state;
+    const showBefore = (state === 'before');
+  
+    Object.values(beforeMeshes).forEach(group => {
+      group.forEach(mesh => mesh.visible = showBefore);
+    });
+  
+    Object.values(afterMeshes).forEach(group => {
+      group.forEach(mesh => mesh.visible = !showBefore);
+    });
+  }
+  // toggle for before and after
+  function toggleSubgroup(groupName, visible) {
+    const group = activeState === 'before' ? beforeMeshes[groupName] : afterMeshes[groupName];
+    if (group) {
+      group.forEach(mesh => mesh.visible = visible);
     }
+  }
+  
+  function addGroupToggle(groupArray, labelText) {
+      const label = document.createElement('label');
+      label.style.display = 'block';
+      label.style.marginTop = '10px';
+    
+      const checkbox = document.createElement('input');
+      checkbox.type = 'checkbox';
+      checkbox.checked = true;
+      checkbox.style.marginRight = '6px';
+    
+      checkbox.addEventListener('change', () => {
+        groupArray.forEach(mesh => {
+          // Only toggle if mesh belongs to active state
+          if (mesh.visible || activeState === 'before' || activeState === 'after') {
+            mesh.visible = checkbox.checked;
+          }
+        });
+        console.log(`${labelText} visibility set to`, checkbox.checked);
+      });
+    
+      label.appendChild(checkbox);
+      label.appendChild(document.createTextNode(labelText));
+      ui.appendChild(label);
+  }  
+
   // toggle mesh   
     function toggleMeshByIndex(index, visible) {
         if (meshList[index]) {
@@ -135,7 +159,8 @@
   let iceCrystal = [];
   let podsystems = [];
   let podtreesystems = [];
-
+  let activeState = 'before'; // or 'after'
+  
   // load the gtlf file 
   const loader = new GLTFLoader();
   loader.load('https://precambrianmollusc.github.io/IGAU_KeplerRidge_CrystalSurvey/visualization.gltf', gltf => {
@@ -157,37 +182,80 @@
     model.traverse(child => {
        if (child.isMesh || child.type === 'Points') {
         meshList.push(child);
-        if (child.name === 'mesh0') pointCloud0 = child;
-        if (child.name === 'mesh1') pointCloud1 = child;
-        if (child.name === 'mesh13') sphereMesh = child;
-        if (child.name === 'mesh4' || child.name === 'mesh6' || child.name === 'mesh8'|| child.name === 'mesh10'|| child.name === 'mesh11') {iceCrystal.push(child);}
-        if (child.name === 'mesh5' || child.name === 'mesh7' || child.name === 'mesh9'|| child.name === 'mesh12') {silicateCrystal.push(child);}
-        if (child.name === 'mesh2' ) {podtreesystems.push(child);}
-        if (child.name === 'mesh3' ) {podsystems.push(child);}
+        if (child.name === 'mesh0') before_allSystems = child;
+        if (child.name === 'mesh1') after_allSystems = child;
+        if (child.name === 'mesh2') before_criteria = child;
+        if (child.name === 'mesh3') after_criteria = child;
+        if (child.name === 'mesh4' ) {before_podtreesystems.push(child);}
+        if (child.name === 'mesh5' ) {before_podsystems.push(child);}
+        if (child.name === 'mesh6' ) {after_podtreesystems.push(child);}
+        if (child.name === 'mesh7' ) {after_podsystems.push(child);}
+        if (child.name === 'mesh8' || child.name === 'mesh9' || child.name === 'mesh10'|| child.name === 'mesh12'|| child.name === 'mesh13') {before_iceCrystal.push(child);}
+        if (child.name === 'mesh11' || child.name === 'mesh14' ) {before_silicateCrystal.push(child);}
+        if (child.name === 'mesh15' || child.name === 'mesh17' || child.name === 'mesh19'|| child.name === 'mesh21'|| child.name === 'mesh22') {after_iceCrystal.push(child);}
+        if (child.name === 'mesh16' || child.name === 'mesh18'|| child.name === 'mesh20'|| child.name === 'mesh23' ) {after_silicateCrystal.push(child);}
+        if (child.name === 'mesh24') sphereMesh = child;
         
         console.log(`Mesh ${meshList.length - 1}:`, child.name || '(unnamed)', child);
       }
     });
     
     console.log('Total meshes found:', meshList.length);
-    // point cloud for all systems - shoudl be a low opacity blur
-    pointCloud0.material.size = 2.0; // make points larger
-    pointCloud0.material.opacity = 0.3;
-    pointCloud0.material.transparent = true;
-    pointCloud0.material.needsUpdate = true;
 
-    // point cloiud for the systems that meet criteria but no SPS  we will make this look like spheres
+    // set up the meshes in groups 
+        / BEFORE meshes
+    const beforeMeshes = {
+      AllSystems: [before_allSystems],
+      Criteria: [before_criteria],
+      IceCrystal: before_iceCrystal,
+      SilicateCrystal: before_silicateCrystal,
+      PodTrees: before_podtreesystems,
+      PodSystems: before_podsystems
+      };
+    
+    // AFTER meshes
+    const afterMeshes = {
+      AllSystems: [after_allSystems],
+      Criteria: [after_criteria],
+      IceCrystal: after_iceCrystal,
+      SilicateCrystal: after_silicateCrystal,
+      PodTrees: after_podtreesystems,
+      PodSystems: after_podsystems
+      };
+    };
+    
+    // point cloud for all beforesystems - should be a low opacity blur
+    before_allSystems.material.size = 2.0; // make points larger
+    before_allSystems.material.opacity = 0.3;
+    before_allSystems.material.transparent = true;
+    before_allSystems.material.needsUpdate = true;
+
+    // point cloud for all after systems - should be a low opacity blur
+    after_allSystems.material.size = 2.0; // make points larger
+    after_allSystems.material.opacity = 0.3;
+    after_allSystems.material.transparent = true;
+    after_allSystems.material.needsUpdate = true;
+  
+    // point cloud for the systems that meet criteria but no SPS  we will make this look like spheres
     const sprite_sphere = new THREE.TextureLoader().load('https://threejs.org/examples/textures/sprites/disc.png');
     sprite_sphere.colorSpace = THREE.SRGBColorSpace; // ensures correct color rendering
     console.log('Sprite loaded:', sprite_sphere);
 
-    pointCloud1.material.map = sprite_sphere;
-    pointCloud1.material.size = 10;
-    pointCloud1.material.opacity = 0.7;
-    pointCloud1.material.transparent = true;
-    pointCloud1.material.depthWrite = false; // prevents z-fighting
-    pointCloud1.material.needsUpdate = true;
-    pointCloud1.material.blending = THREE.AdditiveBlending;
+    before_criteria.material.map = sprite_sphere;
+    before_criteria.material.size = 10;
+    before_criteria.material.opacity = 0.7;
+    before_criteria.material.transparent = true;
+    before_criteria.material.depthWrite = false; // prevents z-fighting
+    before_criteria.material.needsUpdate = true;
+    before_criteria.material.blending = THREE.AdditiveBlending;
+    
+    after_criteria.material.map = sprite_sphere;
+    after_criteria.material.size = 10;
+    after_criteria.material.opacity = 0.7;
+    after_criteria.material.transparent = true;
+    after_criteria.material.depthWrite = false; // prevents z-fighting
+    after_criteria.material.needsUpdate = true;
+    after_criteria.material.blending = THREE.AdditiveBlending;
 
     // set up the sphere for the raduis of NSPs from the center 
     sphereMesh.material.opacity = 0.3;
@@ -196,7 +264,7 @@
     sphereMesh.material.needsUpdate = true;
 
     // set up the renderings for the differenet NSPs 
-       silicateCrystal.forEach(mesh => {
+       before_silicateCrystal.forEach(mesh => {
           const materials = Array.isArray(mesh.material) ? mesh.material : [mesh.material];
           materials.forEach(mat => {
             mat.color = new THREE.Color(0x555555);           // slate gray base
@@ -210,8 +278,35 @@
             mat.needsUpdate = true;
           });
         });
-
-      iceCrystal.forEach(mesh => {
+    // set up the renderings for the differenet NSPs 
+       after_silicateCrystal.forEach(mesh => {
+          const materials = Array.isArray(mesh.material) ? mesh.material : [mesh.material];
+          materials.forEach(mat => {
+            mat.color = new THREE.Color(0x555555);           // slate gray base
+            mat.emissive = new THREE.Color(0x111111);        // subtle inner depth
+            mat.emissiveIntensity = 0.2;
+            mat.metalness = 0.8;                             // high metal content
+            mat.roughness = 0.3;                             // polished but not mirror-like
+            mat.transparent = false;
+            mat.opacity = 1.0;
+            mat.depthWrite = true;
+            mat.needsUpdate = true;
+          });
+        });
+ 
+      before_iceCrystal.forEach(mesh => {
+          const materials = Array.isArray(mesh.material) ? mesh.material : [mesh.material];
+          materials.forEach(mat => {
+            mat.emissive = new THREE.Color(0xeeeeff);       // spectral white
+            mat.emissiveIntensity = 0.68;                    // brighter than silicates
+            mat.transparent = true;
+            mat.opacity = 0.5;                              // soft translucency
+            mat.depthWrite = false;
+            mat.needsUpdate = true;
+          });
+        });
+      
+      after_iceCrystal.forEach(mesh => {
           const materials = Array.isArray(mesh.material) ? mesh.material : [mesh.material];
           materials.forEach(mat => {
             mat.emissive = new THREE.Color(0xeeeeff);       // spectral white
@@ -223,7 +318,9 @@
           });
         });
 
-      podtreesystems.forEach(mesh => {
+
+  
+      before_podtreesystems.forEach(mesh => {
           const materials = Array.isArray(mesh.material) ? mesh.material : [mesh.material];
           materials.forEach(mat => {
             mat.emissive = new THREE.Color(0x00ff66);       // spectral green
@@ -235,7 +332,7 @@
           });
         });
     
-          podsystems.forEach(mesh => {
+      before_podsystems.forEach(mesh => {
         const materials = Array.isArray(mesh.material) ? mesh.material : [mesh.material];
         materials.forEach(mat => {
           mat.color = new THREE.Color(0xb87333);          // copper base
@@ -250,7 +347,34 @@
         });
       });
     
-    // add the bounding box 
+      after_podtreesystems.forEach(mesh => {
+          const materials = Array.isArray(mesh.material) ? mesh.material : [mesh.material];
+          materials.forEach(mat => {
+            mat.emissive = new THREE.Color(0x00ff66);       // spectral green
+            mat.emissiveIntensity = 0.5;
+            mat.transparent = true;
+            mat.opacity = 0.4;
+            mat.depthWrite = false;
+            mat.needsUpdate = true;
+          });
+        });
+    
+      after_podsystems.forEach(mesh => {
+        const materials = Array.isArray(mesh.material) ? mesh.material : [mesh.material];
+        materials.forEach(mat => {
+          mat.color = new THREE.Color(0xb87333);          // copper base
+          mat.emissive = new THREE.Color(0x552200);       // warm inner glow
+          mat.emissiveIntensity = 0.3;
+          mat.metalness = 0.6;                            // simulate metal surface
+          mat.roughness = 0.4;                            // slight polish
+          mat.transparent = true;
+          mat.opacity = 0.9;
+          mat.depthWrite = true;
+          mat.needsUpdate = true;
+        });
+      });
+   
+  // add the bounding box 
           const box = new THREE.Box3().setFromObject(model);
           const size = box.getSize(new THREE.Vector3());
           const center = box.getCenter(new THREE.Vector3());
@@ -301,16 +425,27 @@
           );
           
           scene.add(arrowX, arrowY, arrowZ);
+      // Master toggles
+      addGroupToggle(Object.values(beforeMeshes).flat(), 'Before State');
+      addGroupToggle(Object.values(afterMeshes).flat(), 'After State');
+      
+      // Subgroup toggles
+      addGroupToggle(beforeMeshes.AllSystems.concat(afterMeshes.AllSystems), 'All Systems');
+      addGroupToggle(beforeMeshes.Criteria.concat(afterMeshes.Criteria), 'Criteria');
+      addGroupToggle(beforeMeshes.IceCrystal.concat(afterMeshes.IceCrystal), 'Ice Crystals');
+      addGroupToggle(beforeMeshes.SilicateCrystal.concat(afterMeshes.SilicateCrystal), 'Silicate Crystals');
+      addGroupToggle(beforeMeshes.PodTrees.concat(afterMeshes.PodTrees), 'Pod Trees');
+      addGroupToggle(beforeMeshes.PodSystems.concat(afterMeshes.PodSystems), 'Pod Systems');
 
     
       // Add toggles for each defined group
-      addGroupToggle([pointCloud0], 'AllSystems');  
-      addGroupToggle([pointCloud1], 'Meets criteria No NSP');  
-      addGroupToggle(iceCrystal, 'Ice Crystal Group');
-      addGroupToggle(silicateCrystal, 'Silicate Crystal Group');
-      addGroupToggle(podtreesystems, 'Pod Tree Systems');
-      addGroupToggle(podsystems, 'Pod Systems');
-      addGroupToggle([sphereMesh], 'Minimum Sphere');
+      //addGroupToggle([pointCloud0], 'AllSystems');  
+      //addGroupToggle([pointCloud1], 'Meets criteria No NSP');  
+      //addGroupToggle(iceCrystal, 'Ice Crystal Group');
+      //addGroupToggle(silicateCrystal, 'Silicate Crystal Group');
+      //addGroupToggle(podtreesystems, 'Pod Tree Systems');
+      //addGroupToggle(podsystems, 'Pod Systems');
+      //addGroupToggle([sphereMesh], 'Minimum Sphere');
       
       const bboxLabel = document.createElement('label');
       bboxLabel.style.display = 'block';
