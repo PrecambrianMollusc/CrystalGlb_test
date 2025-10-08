@@ -261,20 +261,6 @@
           labelX.scale.set(labelScale, labelScale * 0.5, 1);
           labelY.scale.set(labelScale, labelScale * 0.5, 1);
           labelZ.scale.set(labelScale, labelScale * 0.5, 1);
-
-    
-    // Create a UI container
-    const ui = document.createElement('div');
-    ui.style.position = 'absolute';
-    ui.style.top = '10px';
-    ui.style.left = '10px';
-    ui.style.background = 'rgba(0,0,0,0.7)';
-    ui.style.padding = '10px';
-    ui.style.color = 'white';
-    ui.style.fontFamily = 'sans-serif';
-    ui.style.zIndex = '10';
-    document.body.appendChild(ui);
-    
   
       // Add toggles for each defined group
       addGroupToggle([pointCloud0], 'AllSystems');  
