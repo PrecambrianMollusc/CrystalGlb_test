@@ -280,9 +280,7 @@
             mat.needsUpdate = true;
           });
         });
-
-
-  
+ 
       before_podtreesystems.forEach(mesh => {
           const materials = Array.isArray(mesh.material) ? mesh.material : [mesh.material];
           materials.forEach(mat => {
@@ -429,13 +427,13 @@
     label.appendChild(document.createTextNode(labelText));
     ui.appendChild(label);
   }
-    
-    
+        
     
     // master toggle (looks same as other checkboxes)
         addGroupToggle(null, 'Show Before State', true);
         
         // subgroup toggles that control both before/after groups
+
         addGroupToggle(beforeMeshes.AllSystems.concat(afterMeshes.AllSystems), 'All Systems', false, 'AllSystems');
         addGroupToggle(beforeMeshes.Criteria.concat(afterMeshes.Criteria), 'Criteria', false, 'Criteria');
         addGroupToggle(beforeMeshes.IceCrystal.concat(afterMeshes.IceCrystal), 'Ice Crystals', false, 'IceCrystal');
@@ -446,18 +444,6 @@
         // initialize visibility once
         updateVisibility();
         
-                  
-
-    
-      // Add toggles for each defined group
-      //addGroupToggle([pointCloud0], 'AllSystems');  
-      //addGroupToggle([pointCloud1], 'Meets criteria No NSP');  
-      //addGroupToggle(iceCrystal, 'Ice Crystal Group');
-      //addGroupToggle(silicateCrystal, 'Silicate Crystal Group');
-      //addGroupToggle(podtreesystems, 'Pod Tree Systems');
-      //addGroupToggle(podsystems, 'Pod Systems');
-      //addGroupToggle([sphereMesh], 'Minimum Sphere');
-      
       const bboxLabel = document.createElement('label');
       bboxLabel.style.display = 'block';
       bboxLabel.style.marginTop = '10px';
