@@ -270,20 +270,6 @@
           const labelX = createAxisLabelMesh('Galactic X', new THREE.Vector3(min.x + offset, min.y, min.z), new THREE.Euler(0, 0, 0));
           const labelY = createAxisLabelMesh('Galactic Y', new THREE.Vector3(min.x, min.y + offset, min.z), new THREE.Euler(0, 0, Math.PI / 2));
           const labelZ = createAxisLabelMesh('Galactic Z', new THREE.Vector3(min.x, min.y, min.z + offset), new THREE.Euler( 0,  - Math.PI / 2, 0));        
-      //const labelZ = createAxisLabelMesh(
-      //'Galactic Ztest',
-      //new THREE.Vector3(center.x, center.y, max.z + offset),
-      //new THREE.Euler(0, 0, Math.PI / 2)
-      //  );
-
-          //labelX.position.set(min.x + offset, min.y, min.z); // along +X
-          //labelY.position.set(min.x, min.y + offset, min.z); // along +Y
-          //labelZ.position.set(min.x, min.y, min.z + offset); // along +Z
-     
-          // rotate along axis 
-          //labelX.rotation.set(0, 0, 0); // flat, facing along X
-          //labelY.rotation.set(0, 0, Math.PI / 2); // rotate around Z to align with Y
-          //labelZ.rotation.set(Math.PI / 2, 0, 0); // rotate around X to align with Z
               
           const labelScale = size.length() * 0.002; // 20% of diagonal length
           labelX.scale.set(labelScale, labelScale * 0.5, 1);
@@ -291,9 +277,32 @@
           labelZ.scale.set(labelScale, labelScale * 0.5, 1);
     
           scene.add(labelX, labelY, labelZ);
-    const arrowZ = new THREE.ArrowHelper(new THREE.Vector3(0, 0, 1), center, 500, 0x0000ff);
-    scene.add(arrowZ);
+          
+          const arrowLength = size.length() * 0.2;
+          const arrowX = new THREE.ArrowHelper(
+            new THREE.Vector3(1, 0, 0), // direction: +X
+            box.min,                    // origin: bounding box corner
+            arrowLength,
+            0xff4444                    // red
+          );
+          
+          const arrowY = new THREE.ArrowHelper(
+            new THREE.Vector3(0, 1, 0), // direction: +Y
+            box.min,
+            arrowLength,
+            0x44ff44                    // green
+          );
+          
+          const arrowZ = new THREE.ArrowHelper(
+            new THREE.Vector3(0, 0, 1), // direction: +Z
+            box.min,
+            arrowLength,
+            0x4444ff                    // blue
+          );
+          
+          scene.add(arrowX, arrowY, arrowZ);
 
+    
       // Add toggles for each defined group
       addGroupToggle([pointCloud0], 'AllSystems');  
       addGroupToggle([pointCloud1], 'Meets criteria No NSP');  
