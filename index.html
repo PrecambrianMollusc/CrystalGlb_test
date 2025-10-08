@@ -54,7 +54,7 @@
   
   // Functions and helpers
   // Create axis label sprites
-    function createAxisLabel(text, position, color = 0xffffff) {
+    function createAxisLabel_old(text, position, color = 0xffffff) {
       const canvas = document.createElement('canvas');
       const context = canvas.getContext('2d');
       context.font = '24px sans-serif';
@@ -68,7 +68,34 @@
       sprite.scale.set(100, 50, 1);
       return sprite;
     }
-
+    
+    function createAxisLabelMesh(text, position, rotation, color = 0xffffff) {
+      const canvas = document.createElement('canvas');
+      canvas.width = 256;
+      canvas.height = 64;
+    
+      const context = canvas.getContext('2d');
+      context.font = '28px sans-serif';
+      context.fillStyle = 'white';
+      context.textAlign = 'center';
+      context.textBaseline = 'middle';
+      context.fillText(text, canvas.width / 2, canvas.height / 2);
+    
+      const texture = new THREE.CanvasTexture(canvas);
+      const material = new THREE.MeshBasicMaterial({
+        map: texture,
+        transparent: true,
+        side: THREE.DoubleSide,
+        color,
+      });
+    
+      const geometry = new THREE.PlaneGeometry(100, 40);
+      const mesh = new THREE.Mesh(geometry, material);
+      mesh.position.copy(position);
+      mesh.rotation.set(rotation.x, rotation.y, rotation.z);
+      return mesh;
+    }
+    
     // funtions Add a toggle for each mesh group
     function addGroupToggle(groupArray, labelText) {
         const label = document.createElement('label');
@@ -238,14 +265,14 @@
           scene.add(boxHelper);
           const min = box.min;
           const max = box.max;
-          
-          const labelX = createAxisLabel('X Galactic', new THREE.Vector3(1000, 0, 0));
-          const labelY = createAxisLabel('Z Galactic', new THREE.Vector3(0, 1000, 0));
-          const labelZ = createAxisLabel('Y Galactic', new THREE.Vector3(0, 0, 1000));
-          scene.add(labelX);
-          scene.add(labelY);
-          scene.add(labelZ);
-         
+
+         const offset = size.length() * 0.05;
+
+          const labelX = createAxisLabelMesh('X', new THREE.Vector3(min.x + offset, min.y, min.z), new THREE.Euler(0, 0, 0));
+          const labelY = createAxisLabelMesh('Y', new THREE.Vector3(min.x, min.y + offset, min.z), new THREE.Euler(0, 0, Math.PI / 2));
+          const labelZ = createAxisLabelMesh('Z', new THREE.Vector3(min.x, min.y, min.z + offset), new THREE.Euler(Math.PI / 2, 0, 0));        
+          scene.add(labelX, labelY, labelZ);
+        
           const offset = size.length() * 0.05;
           
           labelX.position.set(min.x + offset, min.y, min.z); // along +X
