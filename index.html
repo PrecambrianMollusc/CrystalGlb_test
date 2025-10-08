@@ -269,12 +269,17 @@
     scene.add(boxHelper);
     const min = box.min;
     const max = box.max;
+        
+    // X label at far right edge
+    labelX.position.set(max.x + 200, min.y, min.z);
     
-    labelX.position.set(max.x, center.y, center.z); // X label at max X
-    labelY.position.set(center.x, max.y, center.z); // Y label at max Y
-    labelZ.position.set(center.x, center.y, max.z); // Z label at max Z
+    // Y label at top edge
+    labelY.position.set(min.x, max.y + 200, min.z);
     
-    const labelScale = size.length() * 0.05;
+    // Z label at front edge
+    labelZ.position.set(min.x, min.y, max.z + 200);
+    
+    const labelScale = size.length() * 0.1; // 10% of diagonal length
     labelX.scale.set(labelScale, labelScale * 0.5, 1);
     labelY.scale.set(labelScale, labelScale * 0.5, 1);
     labelZ.scale.set(labelScale, labelScale * 0.5, 1);
