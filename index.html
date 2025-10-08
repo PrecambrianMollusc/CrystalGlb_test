@@ -282,13 +282,13 @@
     const max = box.max;
         
     // X label at far right edge
-    labelX.position.set(min.x + 100, min.y+20, min.z);
+    labelX.position.set(min.x + 100, min.y-100, min.z-100);
     
     // Y label at top edge
-    labelY.position.set(min.x, min.y +100 , min.z);
+    labelY.position.set(min.x-100, min.y +100 , min.z-100);
     
     // Z label at front edge
-    labelZ.position.set(min.x, min.y, min.z +100);
+    labelZ.position.set(min.x-100, min.y-100, min.z +100);
     
     const labelScale = size.length() * 0.2; // 10% of diagonal length
     labelX.scale.set(labelScale, labelScale * 0.5, 1);
