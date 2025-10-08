@@ -96,7 +96,16 @@
       mesh.rotation.set(rotation.x, rotation.y, rotation.z);
       return mesh;
   }
-    
+  
+  const subgroupStates = {
+      AllSystems: true,
+      Criteria: true,
+      IceCrystal: true,
+      SilicateCrystal: true,
+      PodTrees: true,
+      PodSystems: true
+  };  
+  
   function toggleMaster(state) {
       activeState = state;
     
