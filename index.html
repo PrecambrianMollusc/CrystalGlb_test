@@ -14,12 +14,6 @@
   import { GLTFLoader } from './GLTFLoader.js';
   import { OrbitControls } from './OrbitControls.js';
   
-  console.log('THREE version:', THREE.REVISION);
-  console.log('GLTFLoader loaded');
-
-  console.log('Script started');
-  console.log('Imports done');
-
   const scene = new THREE.Scene();
   scene.background = new THREE.Color(0x111111);
   const axesHelper = new THREE.AxesHelper(1000);
@@ -42,16 +36,13 @@
     return sprite;
   }
   
-  const labelX = createAxisLabel('X', new THREE.Vector3(1000, 0, 0));
-  const labelY = createAxisLabel('Y', new THREE.Vector3(0, 1000, 0));
-  const labelZ = createAxisLabel('Z', new THREE.Vector3(0, 0, 1000));
-  
+  const labelX = createAxisLabel('X Galactic', new THREE.Vector3(1000, 0, 0));
+  const labelY = createAxisLabel('Z Galactic', new THREE.Vector3(0, 1000, 0));
+  const labelZ = createAxisLabel('Y Galactic', new THREE.Vector3(0, 0, 1000));
   scene.add(labelX);
   scene.add(labelY);
   scene.add(labelZ);
   
-
-
   const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 10000);
   camera.position.set(0, 0, 1000);
 
@@ -236,8 +227,6 @@
       axesLabel.appendChild(axesCheckbox);
       axesLabel.appendChild(document.createTextNode('Show Axes & Labels'));
       ui.appendChild(axesLabel);
-
-
     
     // Opacity slider for mesh 13
     const opacityLabel = document.createElement('label');
@@ -269,8 +258,7 @@
     });
     ui.appendChild(opacityLabel);
     ui.appendChild(opacitySlider);
-   
-        
+           
     const box = new THREE.Box3().setFromObject(model);
     const size = box.getSize(new THREE.Vector3());
     const center = box.getCenter(new THREE.Vector3());
@@ -294,8 +282,7 @@
   const directional = new THREE.DirectionalLight(0xffffff, 0.2);
   directional.position.set(1, 1, 1);
   scene.add(directional);
-  
-  
+    
   function animate() {
     requestAnimationFrame(animate);
     controls.update();
@@ -309,7 +296,6 @@
       console.log(`Mesh ${index} visibility set to`, visible);
     }
   }
-
 
   window.addEventListener('resize', () => {
     camera.aspect = window.innerWidth / window.innerHeight;
