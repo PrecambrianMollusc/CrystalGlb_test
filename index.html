@@ -43,7 +43,6 @@
   scene.add(labelY);
   scene.add(labelZ);
 
-  
   const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 10000);
   camera.position.set(0, 0, 1000);
 
@@ -331,12 +330,12 @@
   }
   animate();
   
-  //function toggleMeshByIndex(index, visible) {
-  //  if (meshList[index]) {
-  //    meshList[index].visible = visible;
-  //    console.log(`Mesh ${index} visibility set to`, visible);
-  //  }
-  //}
+  function toggleMeshByIndex(index, visible) {
+    if (meshList[index]) {
+      meshList[index].visible = visible;
+      console.log(`Mesh ${index} visibility set to`, visible);
+    }
+  }
 
   window.addEventListener('resize', () => {
     camera.aspect = window.innerWidth / window.innerHeight;
