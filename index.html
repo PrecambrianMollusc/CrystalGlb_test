@@ -53,7 +53,6 @@
 
   const controls = new OrbitControls(camera, renderer.domElement);
   controls.enableDamping = true;
-
   console.log('Attempting to load GLTF...');
   
   let meshList = [];
@@ -65,7 +64,7 @@
   let podsystems = [];
   let podtreesystems = [];
 
-  // laod teh gtlf file 
+  // load the gtlf file 
   const loader = new GLTFLoader();
   loader.load('https://precambrianmollusc.github.io/IGAU_KeplerRidge_CrystalSurvey/visualization.gltf', gltf => {
     const model = gltf.scene;
@@ -263,18 +262,18 @@
     const value = parseFloat(opacitySlider.value);
 
   // think this was a check if the sphere hadn't loaded but probbaly not needed    
-  //if (sphereMesh && sphereMesh.material) {
-  //  const materials = Array.isArray(sphereMesh.material) ? sphereMesh.material : [sphereMesh.material];
-  //  materials.forEach(mat => {
-  //    mat.transparent = true;
-  //    mat.opacity = value;
-  //    mat.depthWrite = false;
-  //    mat.needsUpdate = true;
-  //  });
-  //    } else {
-  //      console.warn('Sphere mesh not yet available');
-  //    }
-  //  });
+  if (sphereMesh && sphereMesh.material) {
+    const materials = Array.isArray(sphereMesh.material) ? sphereMesh.material : [sphereMesh.material];
+    materials.forEach(mat => {
+      mat.transparent = true;
+      mat.opacity = value;
+      mat.depthWrite = false;
+      mat.needsUpdate = true;
+    });
+      } else {
+        console.warn('Sphere mesh not yet available');
+      }
+    });
   
     ui.appendChild(opacityLabel);
     ui.appendChild(opacitySlider);
