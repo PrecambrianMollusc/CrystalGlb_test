@@ -20,6 +20,28 @@
   axesHelper.name = "AxesHelper";
   scene.add(axesHelper);
 
+  // Create axis label sprites
+  function createAxisLabel(text, position, color = 0xffffff) {
+    const canvas = document.createElement('canvas');
+    const context = canvas.getContext('2d');
+    context.font = '24px sans-serif';
+    context.fillStyle = 'white';
+    context.fillText(text, 0, 24);
+  
+    const texture = new THREE.CanvasTexture(canvas);
+    const material = new THREE.SpriteMaterial({ map: texture, color });
+    const sprite = new THREE.Sprite(material);
+    sprite.position.copy(position);
+    sprite.scale.set(100, 50, 1);
+    return sprite;
+  }
+  
+  const labelX = createAxisLabel('X Galactic', new THREE.Vector3(1000, 0, 0));
+  const labelY = createAxisLabel('Z Galactic', new THREE.Vector3(0, 1000, 0));
+  const labelZ = createAxisLabel('Y Galactic', new THREE.Vector3(0, 0, 1000));
+  scene.add(labelX);
+  scene.add(labelY);
+  scene.add(labelZ);
 
   
   const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 10000);
@@ -77,7 +99,7 @@
     
     console.log('Total meshes found:', meshList.length);
 
-    // point c;loud for all systems - shoudl be a low opacity blur
+    // point cloud for all systems - shoudl be a low opacity blur
     pointCloud0.material.size = 2.0; // make points larger
     pointCloud0.material.opacity = 0.3;
     pointCloud0.material.transparent = true;
@@ -87,6 +109,7 @@
     // get the texture sprites 
     const sprite_sphere = new THREE.TextureLoader().load('textures/sprites/disc.png');
     sprite_sphere.colorSpace = THREE.SRGBColorSpace; // ensures correct color rendering
+    console.log('Sprite loaded:', sprite_sphere);
 
     pointCloud1.material.map = sprite_sphere;
     pointCloud1.material.size = 5;
@@ -240,44 +263,21 @@
     const value = parseFloat(opacitySlider.value);
 
   // think this was a check if the sphere hadn't loaded but probbaly not needed    
-  if (sphereMesh && sphereMesh.material) {
-    const materials = Array.isArray(sphereMesh.material) ? sphereMesh.material : [sphereMesh.material];
-    materials.forEach(mat => {
-      mat.transparent = true;
-      mat.opacity = value;
-      mat.depthWrite = false;
-      mat.needsUpdate = true;
-    });
-      } else {
-        console.warn('Sphere mesh not yet available');
-      }
-    });
+  //if (sphereMesh && sphereMesh.material) {
+  //  const materials = Array.isArray(sphereMesh.material) ? sphereMesh.material : [sphereMesh.material];
+  //  materials.forEach(mat => {
+  //    mat.transparent = true;
+  //    mat.opacity = value;
+  //    mat.depthWrite = false;
+  //    mat.needsUpdate = true;
+  //  });
+  //    } else {
+  //      console.warn('Sphere mesh not yet available');
+  //    }
+  //  });
+  
     ui.appendChild(opacityLabel);
     ui.appendChild(opacitySlider);
-
-  // Create axis label sprites
-  function createAxisLabel(text, position, color = 0xffffff) {
-    const canvas = document.createElement('canvas');
-    const context = canvas.getContext('2d');
-    context.font = '24px sans-serif';
-    context.fillStyle = 'white';
-    context.fillText(text, 0, 24);
-  
-    const texture = new THREE.CanvasTexture(canvas);
-    const material = new THREE.SpriteMaterial({ map: texture, color });
-    const sprite = new THREE.Sprite(material);
-    sprite.position.copy(position);
-    sprite.scale.set(100, 50, 1);
-    return sprite;
-  }
-  
-  const labelX = createAxisLabel('X Galactic', new THREE.Vector3(1000, 0, 0));
-  const labelY = createAxisLabel('Z Galactic', new THREE.Vector3(0, 1000, 0));
-  const labelZ = createAxisLabel('Y Galactic', new THREE.Vector3(0, 0, 1000));
-  scene.add(labelX);
-  scene.add(labelY);
-  scene.add(labelZ);
-
    
     // add the bounding box 
     const box = new THREE.Box3().setFromObject(model);
