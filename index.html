@@ -270,6 +270,12 @@
           const labelX = createAxisLabelMesh('Galactic X', new THREE.Vector3(min.x + offset, min.y, min.z), new THREE.Euler(0, 0, 0));
           const labelY = createAxisLabelMesh('Galactic Y', new THREE.Vector3(min.x, min.y + offset, min.z), new THREE.Euler(0, 0, Math.PI / 2));
           const labelZ = createAxisLabelMesh('Galactic Z', new THREE.Vector3(min.x, min.y, min.z + offset), new THREE.Euler( 0,  - Math.PI / 2, 0));        
+      const labelZ = createAxisLabelMesh(
+      'Galactic Ztest',
+      new THREE.Vector3(center.x, center.y, max.z + offset),
+      new THREE.Euler(0, 0, Math.PI / 2)
+        );
+
           //labelX.position.set(min.x + offset, min.y, min.z); // along +X
           //labelY.position.set(min.x, min.y + offset, min.z); // along +Y
           //labelZ.position.set(min.x, min.y, min.z + offset); // along +Z
@@ -285,7 +291,9 @@
           labelZ.scale.set(labelScale, labelScale * 0.5, 1);
     
           scene.add(labelX, labelY, labelZ);
-    
+    const arrowZ = new THREE.ArrowHelper(new THREE.Vector3(0, 0, 1), center, 500, 0x0000ff);
+    scene.add(arrowZ);
+
       // Add toggles for each defined group
       addGroupToggle([pointCloud0], 'AllSystems');  
       addGroupToggle([pointCloud1], 'Meets criteria No NSP');  
