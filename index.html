@@ -265,7 +265,7 @@
           scene.add(boxHelper);
           const min = box.min;
           const max = box.max;
-          const offset = size.length() * 0.05;
+          const offset = size.length() * 0.1;
 
           const labelX = createAxisLabelMesh('Galactic X', new THREE.Vector3(min.x + offset, min.y, min.z), new THREE.Euler(0, 0, 0));
           const labelY = createAxisLabelMesh('Galactic Y', new THREE.Vector3(min.x, min.y + offset, min.z), new THREE.Euler(0, 0, Math.PI / 2));
