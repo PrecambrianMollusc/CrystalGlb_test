@@ -274,12 +274,12 @@
     labelY.position.set(center.x, max.y, center.z); // Y label at max Y
     labelZ.position.set(center.x, center.y, max.z); // Z label at max Z
     
-    axesHelper.position.copy(center);
-    labelX.position.copy(center.clone().add(new THREE.Vector3(1000, 0, 0)));
-    labelY.position.copy(center.clone().add(new THREE.Vector3(0, 1000, 0)));
-    labelZ.position.copy(center.clone().add(new THREE.Vector3(0, 0, 1000)));
-    
+    const labelScale = size.length() * 0.05;
+    labelX.scale.set(labelScale, labelScale * 0.5, 1);
+    labelY.scale.set(labelScale, labelScale * 0.5, 1);
+    labelZ.scale.set(labelScale, labelScale * 0.5, 1);
 
+   
     camera.position.set(center.x, center.y, center.z + size.length());
     controls.target.copy(center);
   }, undefined, error => {
