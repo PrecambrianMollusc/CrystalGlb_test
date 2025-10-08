@@ -98,49 +98,51 @@
   }
     
   function toggleMaster(state) {
-    activeState = state;
-    const showBefore = (state === 'before');
-  
-    Object.values(beforeMeshes).forEach(group => {
-      group.forEach(mesh => mesh.visible = showBefore);
-    });
-  
-    Object.values(afterMeshes).forEach(group => {
-      group.forEach(mesh => mesh.visible = !showBefore);
-    });
-  }
-  // toggle for before and after
-  function toggleSubgroup(groupName, visible) {
-    const group = activeState === 'before' ? beforeMeshes[groupName] : afterMeshes[groupName];
-    if (group) {
-      group.forEach(mesh => mesh.visible = visible);
-    }
+      activeState = state;
+    
+      const showBefore = (state === 'before');
+    
+      const meshGroups = showBefore ? beforeMeshes : afterMeshes;
+    
+      Object.entries(meshGroups).forEach(([groupName, groupMeshes]) => {
+        const isEnabled = subgroupStates[groupName];
+        groupMeshes.forEach(mesh => {
+          mesh.visible = isEnabled;
+        });
+      });
+    
+      // Hide the opposite state completely
+      const oppositeGroups = showBefore ? afterMeshes : beforeMeshes;
+      Object.values(oppositeGroups).forEach(group => {
+        group.forEach(mesh => mesh.visible = false);
+      });
   }
   
   function addGroupToggle(groupArray, labelText) {
-      const label = document.createElement('label');
-      label.style.display = 'block';
-      label.style.marginTop = '10px';
-    
-      const checkbox = document.createElement('input');
-      checkbox.type = 'checkbox';
-      checkbox.checked = true;
-      checkbox.style.marginRight = '6px';
-    
-      checkbox.addEventListener('change', () => {
-        groupArray.forEach(mesh => {
-          // Only toggle if mesh belongs to active state
-          if (mesh.visible || activeState === 'before' || activeState === 'after') {
-            mesh.visible = checkbox.checked;
-          }
-        });
-        console.log(`${labelText} visibility set to`, checkbox.checked);
+    const label = document.createElement('label');
+    label.style.display = 'block';
+    label.style.marginTop = '10px';
+  
+    const checkbox = document.createElement('input');
+    checkbox.type = 'checkbox';
+    checkbox.checked = true;
+    checkbox.style.marginRight = '6px';
+  
+    checkbox.addEventListener('change', () => {
+      subgroupStates[labelText] = checkbox.checked;
+      groupArray.forEach(mesh => {
+        if (mesh.visible || activeState === 'before' || activeState === 'after') {
+          mesh.visible = checkbox.checked;
+        }
       });
-    
-      label.appendChild(checkbox);
-      label.appendChild(document.createTextNode(labelText));
-      ui.appendChild(label);
-  }  
+      console.log(`${labelText} visibility set to`, checkbox.checked);
+    });
+  
+    label.appendChild(checkbox);
+    label.appendChild(document.createTextNode(labelText));
+    ui.appendChild(label);
+  }
+  
 
   // toggle mesh   
     function toggleMeshByIndex(index, visible) {
@@ -230,7 +232,14 @@
       PodSystems: after_podsystems
       };
 
-    
+    const subgroupStates = {
+      AllSystems: true,
+      Criteria: true,
+      IceCrystal: true,
+      SilicateCrystal: true,
+      PodTrees: true,
+      PodSystems: true
+    };
     // point cloud for all beforesystems - should be a low opacity blur
     before_allSystems.material.size = 2.0; // make points larger
     before_allSystems.material.opacity = 0.3;
