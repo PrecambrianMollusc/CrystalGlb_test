@@ -227,6 +227,10 @@
       axesLabel.appendChild(axesCheckbox);
       axesLabel.appendChild(document.createTextNode('Show Axes & Labels'));
       ui.appendChild(axesLabel);
+      axesHelper.visible = true;
+      labelX.visible = true;
+      labelY.visible = true;
+      labelZ.visible = true;
     
     // Opacity slider for mesh 13
     const opacityLabel = document.createElement('label');
@@ -287,6 +291,9 @@
     requestAnimationFrame(animate);
     controls.update();
     renderer.render(scene, camera);
+    labelX.lookAt(camera.position);
+    labelY.lookAt(camera.position);
+    labelZ.lookAt(camera.position);
   }
   animate();
   
