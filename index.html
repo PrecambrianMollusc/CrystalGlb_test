@@ -153,12 +153,19 @@
   //set up import of model 
   let meshList = [];
   let sphereMesh = []; // 👈 this will hold meshList[13] once loaded
-  let pointCloud0 = [];
-  let pointCloud1 = [];
-  let silicateCrystal = [];
-  let iceCrystal = [];
-  let podsystems = [];
-  let podtreesystems = [];
+  let before_allSystems = [];
+  let after_allSystems = [];
+  let before_criteria = [];
+  let after_criteria = [];
+  let before_silicateCrystal = [];
+  let before_iceCrystal = [];
+  let before_podsystems = [];
+  let before_podtreesystems = [];
+  let after_silicateCrystal = [];
+  let after_iceCrystal = [];
+  let after_podsystems = [];
+  let after_podtreesystems = [];
+  
   let activeState = 'before'; // or 'after'
   
   // load the gtlf file 
