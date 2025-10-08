@@ -75,6 +75,12 @@
     const model = gltf.scene;
     scene.add(model);
     console.log('GLTF loaded:', model);
+
+      // 🔍 Traverse and log all scene objects
+  scene.traverse(obj => {
+    console.log(`Object: ${obj.type}, name: ${obj.name || '(unnamed)'}, visible: ${obj.visible}`);
+  });
+
          
     model.traverse(child => {
        if (child.isMesh || child.type === 'Points') {
@@ -284,7 +290,6 @@
     labelY.scale.set(labelScale, labelScale * 0.5, 1);
     labelZ.scale.set(labelScale, labelScale * 0.5, 1);
 
-   
     camera.position.set(center.x, center.y, center.z + size.length());
     controls.target.copy(center);
   }, undefined, error => {
