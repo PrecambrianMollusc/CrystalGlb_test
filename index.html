@@ -218,15 +218,7 @@
       if (['mesh16','mesh18','mesh20','mesh23'].includes(child.name)) afterMeshes.SilicateCrystal.push(child);
       if (child.name === 'mesh24') sphereMesh = child;
     });
-  
-    const subgroupStates = {
-      AllSystems: true,
-      Criteria: true,
-      IceCrystal: true,
-      SilicateCrystal: true,
-      PodTrees: true,
-      PodSystems: true
-    };
+
     // point cloud for all beforesystems - should be a low opacity blur
     before_allSystems.material.size = 2.0; // make points larger
     before_allSystems.material.opacity = 0.3;
