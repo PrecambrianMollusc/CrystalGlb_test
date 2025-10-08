@@ -290,17 +290,18 @@
     scene.add(boxHelper);
     const min = box.min;
     const max = box.max;
-
-    const offset = size.length() * 0.05; // 5% of diagonal
+    
+    const offset = size.length() * 0.05;
+    
     labelX.position.set(min.x + offset, min.y, min.z); // along +X
     labelY.position.set(min.x, min.y + offset, min.z); // along +Y
     labelZ.position.set(min.x, min.y, min.z + offset); // along +Z
 
     // rotate along axis 
-    labelX.rotation.y = Math.PI / 8; // tilt around Y
-    labelY.rotation.x = -Math.PI / 8; // tilt around X
-    labelZ.rotation.x = Math.PI / 8; // tilt around X
-    
+    labelX.rotation.set(0, 0, 0); // flat, facing along X
+    labelY.rotation.set(0, 0, Math.PI / 2); // rotate around Z to align with Y
+    labelZ.rotation.set(Math.PI / 2, 0, 0); // rotate around X to align with Z
+        
     const labelScale = size.length() * 0.2; // 20% of diagonal length
     labelX.scale.set(labelScale, labelScale * 0.5, 1);
     labelY.scale.set(labelScale, labelScale * 0.5, 1);
