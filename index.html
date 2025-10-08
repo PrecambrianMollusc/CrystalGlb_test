@@ -10,42 +10,32 @@
 </head>
 <body>
 <script type="module">
+  //Import modules
   import * as THREE from 'https://unpkg.com/three@0.154.0/build/three.module.js';
   import { GLTFLoader } from './GLTFLoader.js';
   import { OrbitControls } from './OrbitControls.js';
   
+  // renderer , camera, scene, controls
+  
   const scene = new THREE.Scene();
   scene.background = new THREE.Color(0x111111);
-  const axesHelper = new THREE.AxesHelper(1000);
-  axesHelper.name = "AxesHelper";
-  scene.add(axesHelper);
-
-  // Create axis label sprites
-  function createAxisLabel(text, position, color = 0xffffff) {
-    const canvas = document.createElement('canvas');
-    const context = canvas.getContext('2d');
-    context.font = '24px sans-serif';
-    context.fillStyle = 'white';
-    context.fillText(text, 0, 24);
-  
-    const texture = new THREE.CanvasTexture(canvas);
-    const material = new THREE.SpriteMaterial({ map: texture, color });
-    const sprite = new THREE.Sprite(material);
-    sprite.position.copy(position);
-    sprite.scale.set(100, 50, 1);
-    return sprite;
-  }
-  
-  const labelX = createAxisLabel('X Galactic', new THREE.Vector3(1000, 0, 0));
-  const labelY = createAxisLabel('Z Galactic', new THREE.Vector3(0, 1000, 0));
-  const labelZ = createAxisLabel('Y Galactic', new THREE.Vector3(0, 0, 1000));
-  scene.add(labelX);
-  scene.add(labelY);
-  scene.add(labelZ);
+  //const axesHelper = new THREE.AxesHelper(1000);
+  //axesHelper.name = "AxesHelper";
+  //scene.add(axesHelper);
 
   const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 10000);
-  camera.position.set(0, 0, 1000);
-
+ 
+  // Lighting section — right after camera
+  const ambient = new THREE.AmbientLight(0xffffff, 0.4);
+  scene.add(ambient);
+  
+  const hemi = new THREE.HemisphereLight(0x88ccff, 0x222244, 0.6);
+  scene.add(hemi);
+   
+  const directional = new THREE.DirectionalLight(0xffffff, 0.2);
+  directional.position.set(1, 1, 1);
+  scene.add(directional);
+    
   const renderer = new THREE.WebGLRenderer({ antialias: true });
   renderer.setSize(window.innerWidth, window.innerHeight);
   document.body.appendChild(renderer.domElement);
@@ -53,7 +43,57 @@
   const controls = new OrbitControls(camera, renderer.domElement);
   controls.enableDamping = true;
   console.log('Attempting to load GLTF...');
+
+  // Functions and helpers
   
+  // Create axis label sprites
+    function createAxisLabel(text, position, color = 0xffffff) {
+      const canvas = document.createElement('canvas');
+      const context = canvas.getContext('2d');
+      context.font = '24px sans-serif';
+      context.fillStyle = 'white';
+      context.fillText(text, 0, 24);
+    
+      const texture = new THREE.CanvasTexture(canvas);
+      const material = new THREE.SpriteMaterial({ map: texture, color });
+      const sprite = new THREE.Sprite(material);
+      sprite.position.copy(position);
+      sprite.scale.set(100, 50, 1);
+      return sprite;
+    }
+
+    // funtions Add a toggle for each mesh group
+    function addGroupToggle(groupArray, labelText) {
+        const label = document.createElement('label');
+        label.style.display = 'block';
+        label.style.marginTop = '10px';
+      
+        const checkbox = document.createElement('input');
+        checkbox.type = 'checkbox';
+        checkbox.checked = true;
+        checkbox.style.marginRight = '6px';
+      
+        checkbox.addEventListener('change', () => {
+          groupArray.forEach(mesh => {
+            mesh.visible = checkbox.checked;
+          });
+          console.log(`${labelText} visibility set to`, checkbox.checked);
+        });
+      
+        label.appendChild(checkbox);
+        label.appendChild(document.createTextNode(labelText));
+        ui.appendChild(label);
+    }
+    
+  // toggle mesh   
+    function toggleMeshByIndex(index, visible) {
+        if (meshList[index]) {
+          meshList[index].visible = visible;
+          console.log(`Mesh ${index} visibility set to`, visible);
+        }
+    }
+    
+  //set up import of model 
   let meshList = [];
   let sphereMesh = []; // 👈 this will hold meshList[13] once loaded
   let pointCloud0 = [];
@@ -79,6 +119,7 @@
     }
 
   });
+    
   // Traverse the child looking for mesh and points so we can put into groups - at some point need to figure naming in the python export       
     model.traverse(child => {
        if (child.isMesh || child.type === 'Points') {
@@ -178,7 +219,48 @@
           mat.needsUpdate = true;
         });
       });
+    
+    // add the bounding box 
+          const box = new THREE.Box3().setFromObject(model);
+          const size = box.getSize(new THREE.Vector3());
+          const center = box.getCenter(new THREE.Vector3());
+          console.log('Bounding box size:', size);
+          console.log('Bounding box center:', center);
+      
+          camera.position.set(center.x, center.y, center.z + size.length());
+          controls.target.copy(center);
+          controls.update();
+              
+          //const boxHelper = new THREE.Box3Helper(box, 0x888888); // soft grey
+          const boxHelper = new THREE.BoxHelper(model, 0x888888);
+          scene.add(boxHelper);
+          const min = box.min;
+          const max = box.max;
+          
+          const labelX = createAxisLabel('X Galactic', new THREE.Vector3(1000, 0, 0));
+          const labelY = createAxisLabel('Z Galactic', new THREE.Vector3(0, 1000, 0));
+          const labelZ = createAxisLabel('Y Galactic', new THREE.Vector3(0, 0, 1000));
+          scene.add(labelX);
+          scene.add(labelY);
+          scene.add(labelZ);
+         
+          const offset = size.length() * 0.05;
+          
+          labelX.position.set(min.x + offset, min.y, min.z); // along +X
+          labelY.position.set(min.x, min.y + offset, min.z); // along +Y
+          labelZ.position.set(min.x, min.y, min.z + offset); // along +Z
+      
+          // rotate along axis 
+          labelX.rotation.set(0, 0, 0); // flat, facing along X
+          labelY.rotation.set(0, 0, Math.PI / 2); // rotate around Z to align with Y
+          labelZ.rotation.set(Math.PI / 2, 0, 0); // rotate around X to align with Z
+              
+          const labelScale = size.length() * 0.2; // 20% of diagonal length
+          labelX.scale.set(labelScale, labelScale * 0.5, 1);
+          labelY.scale.set(labelScale, labelScale * 0.5, 1);
+          labelZ.scale.set(labelScale, labelScale * 0.5, 1);
 
+    
     // Create a UI container
     const ui = document.createElement('div');
     ui.style.position = 'absolute';
@@ -191,29 +273,7 @@
     ui.style.zIndex = '10';
     document.body.appendChild(ui);
     
-      // Add a toggle for each mesh group
-      function addGroupToggle(groupArray, labelText) {
-        const label = document.createElement('label');
-        label.style.display = 'block';
-        label.style.marginTop = '10px';
-      
-        const checkbox = document.createElement('input');
-        checkbox.type = 'checkbox';
-        checkbox.checked = true;
-        checkbox.style.marginRight = '6px';
-      
-        checkbox.addEventListener('change', () => {
-          groupArray.forEach(mesh => {
-            mesh.visible = checkbox.checked;
-          });
-          console.log(`${labelText} visibility set to`, checkbox.checked);
-        });
-      
-        label.appendChild(checkbox);
-        label.appendChild(document.createTextNode(labelText));
-        ui.appendChild(label);
-      }
-      
+  
       // Add toggles for each defined group
       addGroupToggle([pointCloud0], 'AllSystems');  
       addGroupToggle([pointCloud1], 'Meets criteria No NSP');  
@@ -278,52 +338,6 @@
     ui.appendChild(opacityLabel);
     ui.appendChild(opacitySlider);
    
-    // add the bounding box 
-    const box = new THREE.Box3().setFromObject(model);
-    const size = box.getSize(new THREE.Vector3());
-    const center = box.getCenter(new THREE.Vector3());
-    console.log('Bounding box size:', size);
-    console.log('Bounding box center:', center);
-    
-    //const boxHelper = new THREE.Box3Helper(box, 0x888888); // soft grey
-    const boxHelper = new THREE.BoxHelper(model, 0x888888);
-    scene.add(boxHelper);
-    const min = box.min;
-    const max = box.max;
-    
-    const offset = size.length() * 0.05;
-    
-    labelX.position.set(min.x + offset, min.y, min.z); // along +X
-    labelY.position.set(min.x, min.y + offset, min.z); // along +Y
-    labelZ.position.set(min.x, min.y, min.z + offset); // along +Z
-
-    // rotate along axis 
-    labelX.rotation.set(0, 0, 0); // flat, facing along X
-    labelY.rotation.set(0, 0, Math.PI / 2); // rotate around Z to align with Y
-    labelZ.rotation.set(Math.PI / 2, 0, 0); // rotate around X to align with Z
-        
-    const labelScale = size.length() * 0.2; // 20% of diagonal length
-    labelX.scale.set(labelScale, labelScale * 0.5, 1);
-    labelY.scale.set(labelScale, labelScale * 0.5, 1);
-    labelZ.scale.set(labelScale, labelScale * 0.5, 1);
-
-    camera.position.set(center.x, center.y, center.z + size.length());
-    controls.target.copy(center);
-  }, undefined, error => {
-    console.error('GLTF load error:', error);
-  });
-
-  // 🌌 Lighting section — right after camera
-  const ambient = new THREE.AmbientLight(0xffffff, 0.4);
-  scene.add(ambient);
-  
-  const hemi = new THREE.HemisphereLight(0x88ccff, 0x222244, 0.6);
-  scene.add(hemi);
-  
-  // Optional: remove or tone down harsh directional light
-  const directional = new THREE.DirectionalLight(0xffffff, 0.2);
-  directional.position.set(1, 1, 1);
-  scene.add(directional);
     
   function animate() {
     requestAnimationFrame(animate);
@@ -335,13 +349,7 @@
   }
   animate();
   
-  function toggleMeshByIndex(index, visible) {
-    if (meshList[index]) {
-      meshList[index].visible = visible;
-      console.log(`Mesh ${index} visibility set to`, visible);
-    }
-  }
-
+  
   window.addEventListener('resize', () => {
     camera.aspect = window.innerWidth / window.innerHeight;
     camera.updateProjectionMatrix();
