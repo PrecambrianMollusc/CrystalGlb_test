@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+  <link rel="icon" href="data:,">
   <meta charset="UTF-8" />
   <title>GLTF Viewer</title>
   <style>
@@ -16,15 +17,10 @@
   import { OrbitControls } from './OrbitControls.js';
   
   // renderer , camera, scene, controls
-  
   const scene = new THREE.Scene();
   scene.background = new THREE.Color(0x111111);
-  //const axesHelper = new THREE.AxesHelper(1000);
-  //axesHelper.name = "AxesHelper";
-  //scene.add(axesHelper);
-
-  const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 10000);
  
+  const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 10000);
   // Lighting section — right after camera
   const ambient = new THREE.AmbientLight(0xffffff, 0.4);
   scene.add(ambient);
@@ -45,7 +41,6 @@
   console.log('Attempting to load GLTF...');
 
   // Functions and helpers
-  
   // Create axis label sprites
     function createAxisLabel(text, position, color = 0xffffff) {
       const canvas = document.createElement('canvas');
@@ -84,7 +79,6 @@
         label.appendChild(document.createTextNode(labelText));
         ui.appendChild(label);
     }
-    
   // toggle mesh   
     function toggleMeshByIndex(index, visible) {
         if (meshList[index]) {
@@ -137,7 +131,6 @@
     });
     
     console.log('Total meshes found:', meshList.length);
-
     // point cloud for all systems - shoudl be a low opacity blur
     pointCloud0.material.size = 2.0; // make points larger
     pointCloud0.material.opacity = 0.3;
@@ -145,8 +138,6 @@
     pointCloud0.material.needsUpdate = true;
 
     // point cloiud for the systems that meet criteria but no SPS  we will make this look like spheres
-    // get the texture sprites 
-    //const sprite_sphere = new THREE.TextureLoader().load('textures/sprites/disc.png');
     const sprite_sphere = new THREE.TextureLoader().load('https://threejs.org/examples/textures/sprites/disc.png');
     sprite_sphere.colorSpace = THREE.SRGBColorSpace; // ensures correct color rendering
     console.log('Sprite loaded:', sprite_sphere);
@@ -230,8 +221,7 @@
           camera.position.set(center.x, center.y, center.z + size.length());
           controls.target.copy(center);
           controls.update();
-              
-          //const boxHelper = new THREE.Box3Helper(box, 0x888888); // soft grey
+  
           const boxHelper = new THREE.BoxHelper(model, 0x888888);
           scene.add(boxHelper);
           const min = box.min;
@@ -337,7 +327,9 @@
   
     ui.appendChild(opacityLabel);
     ui.appendChild(opacitySlider);
-   
+
+  }); // ← closes loader.load
+ 
     
   function animate() {
     requestAnimationFrame(animate);
@@ -355,6 +347,7 @@
     camera.updateProjectionMatrix();
     renderer.setSize(window.innerWidth, window.innerHeight);
   });
+
 </script>
 </body>
 </html>
