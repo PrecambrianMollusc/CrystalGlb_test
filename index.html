@@ -206,32 +206,29 @@
       addGroupToggle(podsystems, 'Pod Systems');
       addGroupToggle([sphereMesh], 'Minimum Sphere');
       
-      const axesLabel = document.createElement('label');
-      axesLabel.style.display = 'block';
-      axesLabel.style.marginTop = '10px';
+        const bboxLabel = document.createElement('label');
+      bboxLabel.style.display = 'block';
+      bboxLabel.style.marginTop = '10px';
       
-      const axesCheckbox = document.createElement('input');
-      axesCheckbox.type = 'checkbox';
-      axesCheckbox.checked = true;
-      axesCheckbox.style.marginRight = '6px';
+      const bboxCheckbox = document.createElement('input');
+      bboxCheckbox.type = 'checkbox';
+      bboxCheckbox.checked = true;
+      bboxCheckbox.style.marginRight = '6px';
       
-      axesCheckbox.addEventListener('change', () => {
-        const visible = axesCheckbox.checked;
-        axesHelper.visible = visible;
+      bboxCheckbox.addEventListener('change', () => {
+        const visible = bboxCheckbox.checked;
+        boxHelper.visible = visible;
         labelX.visible = visible;
         labelY.visible = visible;
         labelZ.visible = visible;
-        console.log('Axes and labels visibility set to', visible);
+        console.log('Bounding box and labels visibility set to', visible);
       });
       
-      axesLabel.appendChild(axesCheckbox);
-      axesLabel.appendChild(document.createTextNode('Show Axes & Labels'));
-      ui.appendChild(axesLabel);
-      axesHelper.visible = true;
-      labelX.visible = true;
-      labelY.visible = true;
-      labelZ.visible = true;
-    
+      bboxLabel.appendChild(bboxCheckbox);
+      bboxLabel.appendChild(document.createTextNode('Show Bounding Box & Labels'));
+      ui.appendChild(bboxLabel);
+      
+        
     // Opacity slider for mesh 13
     const opacityLabel = document.createElement('label');
     opacityLabel.style.display = 'block';
@@ -268,6 +265,14 @@
     const center = box.getCenter(new THREE.Vector3());
     console.log('Bounding box size:', size);
     console.log('Bounding box center:', center);
+    const boxHelper = new THREE.Box3Helper(box, 0x888888); // soft grey
+    scene.add(boxHelper);
+    const min = box.min;
+    const max = box.max;
+    
+    labelX.position.set(max.x, center.y, center.z); // X label at max X
+    labelY.position.set(center.x, max.y, center.z); // Y label at max Y
+    labelZ.position.set(center.x, center.y, max.z); // Z label at max Z
     
     axesHelper.position.copy(center);
     labelX.position.copy(center.clone().add(new THREE.Vector3(1000, 0, 0)));
