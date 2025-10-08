@@ -108,47 +108,6 @@
   
   let activeState = 'before'; // default
 
-  // single visibility updater (uses beforeMeshes and afterMeshes)
-  function updateVisibility() {
-    Object.keys(subgroupStates).forEach(groupName => {
-      const enabled = !!subgroupStates[groupName];
-      (beforeMeshes[groupName] || []).forEach(m => { if (m) m.visible = (activeState === 'before' && enabled); });
-      (afterMeshes[groupName]  || []).forEach(m => { if (m) m.visible = (activeState === 'after'  && enabled); });
-    });
-  }
-
-  // reusable toggle builder. If isMaster is true, checkbox flips before/after; otherwise it's a subgroup toggle.
-  function addGroupToggle(groupArray, labelText, isMaster = false, groupKey = null) {
-    const label = document.createElement('label');
-    label.style.display = 'block';
-    label.style.marginTop = '8px';
-  
-    const checkbox = document.createElement('input');
-    checkbox.type = 'checkbox';
-    checkbox.style.marginRight = '6px';
-  
-    if (isMaster) {
-      // master visual match: checked => before, unchecked => after
-      checkbox.checked = (activeState === 'before');
-      checkbox.addEventListener('change', (e) => {
-        activeState = e.target.checked ? 'before' : 'after';
-        updateVisibility();
-      });
-    } else {
-      const key = groupKey || labelText.replace(/\s+/g, '');
-      subgroupStates[key] = subgroupStates[key] ?? true;
-      checkbox.checked = !!subgroupStates[key];
-      checkbox.addEventListener('change', (e) => {
-        subgroupStates[key] = e.target.checked;
-        updateVisibility();
-      });
-    }
-  
-    label.appendChild(checkbox);
-    label.appendChild(document.createTextNode(labelText));
-    ui.appendChild(label);
-  }
-  
   //set up import of model 
   let meshList = [];
   let sphereMesh = []; // 👈 this will hold meshList[13] once loaded
