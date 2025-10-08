@@ -110,55 +110,47 @@
   const beforeMeshes = {
     AllSystems: [], Criteria: [], IceCrystal: [], SilicateCrystal: [], PodTrees: [], PodSystems: []
   };
-  const afterMeshes = {
-    AllSystems: [], Criteria: [], IceCrystal: [], SilicateCrystal: [], PodTrees: [], PodSystems: []
-  };
   
-  function toggleMaster(state) {
-    activeState = state;
-    updateVisibility();
+  \\const afterMeshes = {
+  \\  AllSystems: [], Criteria: [], IceCrystal: [], SilicateCrystal: [], PodTrees: [], PodSystems: []
+  \\};
+  \\  function toggleMaster(state) {
+  \\  activeState = state;
+  \\  updateVisibility();
+ \\ }
+  
+  // single visibility updater (uses beforeMeshes and afterMeshes)
+  function updateVisibility() {
+    Object.keys(subgroupStates).forEach(groupName => {
+      const enabled = !!subgroupStates[groupName];
+      (beforeMeshes[groupName] || []).forEach(m => { if (m) m.visible = (activeState === 'before' && enabled); });
+      (afterMeshes[groupName]  || []).forEach(m => { if (m) m.visible = (activeState === 'after'  && enabled); });
+    });
   }
-  
-    // call this to refresh what should be visible based on activeState and subgroupStates
-    function updateVisibility() {
-      Object.keys(subgroupStates).forEach(groupName => {
-        const enabled = !!subgroupStates[groupName];
-        const beforeGroup = beforeMeshes[groupName] || [];
-        const afterGroup  = afterMeshes[groupName]  || [];
-    
-        beforeGroup.forEach(m => m.visible = (activeState === 'before' && enabled));
-        afterGroup.forEach(m  => m.visible = (activeState === 'after'  && enabled));
-      });
-    }
 
-  
-  // enhanced addGroupToggle: reuse for both subgroup and master checkbox
-  // If isMaster is true, labelText is used as the master label and groupArray is ignored.
-  function addGroupToggle(groupArray, labelText, isMaster = false, groupNameForState = null) {
+  // reusable toggle builder. If isMaster is true, checkbox flips before/after; otherwise it's a subgroup toggle.
+  function addGroupToggle(groupArray, labelText, isMaster = false, groupKey = null) {
     const label = document.createElement('label');
     label.style.display = 'block';
-    label.style.marginTop = '10px';
+    label.style.marginTop = '8px';
   
     const checkbox = document.createElement('input');
     checkbox.type = 'checkbox';
-    checkbox.checked = true;
     checkbox.style.marginRight = '6px';
   
-    // If this is a subgroup checkbox we register it in subgroupStates
-    if (!isMaster) {
-      const groupKey = groupNameForState || labelText;
-      subgroupStates[groupKey] = true;
-  
-      checkbox.addEventListener('change', () => {
-        subgroupStates[groupKey] = checkbox.checked;
-        updateVisibility();
-      });
-  
-      // when created, don't immediately toggle meshes directly; updateVisibility governs visibility
-    } else {
-      // Master checkbox: checked => before, unchecked => after
+    if (isMaster) {
+      // master visual match: checked => before, unchecked => after
+      checkbox.checked = (activeState === 'before');
       checkbox.addEventListener('change', (e) => {
         activeState = e.target.checked ? 'before' : 'after';
+        updateVisibility();
+      });
+    } else {
+      const key = groupKey || labelText.replace(/\s+/g, '');
+      subgroupStates[key] = subgroupStates[key] ?? true;
+      checkbox.checked = !!subgroupStates[key];
+      checkbox.addEventListener('change', (e) => {
+        subgroupStates[key] = e.target.checked;
         updateVisibility();
       });
     }
@@ -167,6 +159,7 @@
     label.appendChild(document.createTextNode(labelText));
     ui.appendChild(label);
   }
+  
 
     
   //set up import of model 
@@ -202,22 +195,51 @@
 
   });
     
+// Traverse the child looking for mesh and points so we can put into groups - at some point need to figure naming in the python export       
     model.traverse(child => {
-      if (!(child.isMesh || child.type === 'Points')) return;
-      if (child.name === 'mesh0') beforeMeshes.AllSystems.push(child);
-      if (child.name === 'mesh1') afterMeshes.AllSystems.push(child);
-      if (child.name === 'mesh2') beforeMeshes.Criteria.push(child);
-      if (child.name === 'mesh3') afterMeshes.Criteria.push(child);
-      if (child.name === 'mesh4') beforeMeshes.PodTrees.push(child);
-      if (child.name === 'mesh5') beforeMeshes.PodSystems.push(child);
-      if (child.name === 'mesh6') afterMeshes.PodTrees.push(child);
-      if (child.name === 'mesh7') afterMeshes.PodSystems.push(child);
-      if (['mesh8','mesh9','mesh10','mesh12','mesh13'].includes(child.name)) beforeMeshes.IceCrystal.push(child);
-      if (['mesh11','mesh14'].includes(child.name)) beforeMeshes.SilicateCrystal.push(child);
-      if (['mesh15','mesh17','mesh19','mesh21','mesh22'].includes(child.name)) afterMeshes.IceCrystal.push(child);
-      if (['mesh16','mesh18','mesh20','mesh23'].includes(child.name)) afterMeshes.SilicateCrystal.push(child);
-      if (child.name === 'mesh24') sphereMesh = child;
+       if (child.isMesh || child.type === 'Points') {
+        meshList.push(child);
+        if (child.name === 'mesh0') before_allSystems = child;
+        if (child.name === 'mesh1') after_allSystems = child;
+        if (child.name === 'mesh2') before_criteria = child;
+        if (child.name === 'mesh3') after_criteria = child;
+        if (child.name === 'mesh4' ) {before_podtreesystems.push(child);}
+        if (child.name === 'mesh5' ) {before_podsystems.push(child);}
+        if (child.name === 'mesh6' ) {after_podtreesystems.push(child);}
+        if (child.name === 'mesh7' ) {after_podsystems.push(child);}
+        if (child.name === 'mesh8' || child.name === 'mesh9' || child.name === 'mesh10'|| child.name === 'mesh12'|| child.name === 'mesh13') {before_iceCrystal.push(child);}
+        if (child.name === 'mesh11' || child.name === 'mesh14' ) {before_silicateCrystal.push(child);}
+        if (child.name === 'mesh15' || child.name === 'mesh17' || child.name === 'mesh19'|| child.name === 'mesh21'|| child.name === 'mesh22') {after_iceCrystal.push(child);}
+        if (child.name === 'mesh16' || child.name === 'mesh18'|| child.name === 'mesh20'|| child.name === 'mesh23' ) {after_silicateCrystal.push(child);}
+        if (child.name === 'mesh24') sphereMesh = child;
+        
+        console.log(`Mesh ${meshList.length - 1}:`, child.name || '(unnamed)', child);
+      }
     });
+    
+    console.log('Total meshes found:', meshList.length);
+
+    // set up the meshes in groups 
+    // BEFORE meshes
+    beforeMeshes = {
+      AllSystems: [before_allSystems],
+      Criteria: [before_criteria],
+      IceCrystal: before_iceCrystal,
+      SilicateCrystal: before_silicateCrystal,
+      PodTrees: before_podtreesystems,
+      PodSystems: before_podsystems
+      };
+    
+    // AFTER meshes
+    afterMeshes = {
+      AllSystems: [after_allSystems],
+      Criteria: [after_criteria],
+      IceCrystal: after_iceCrystal,
+      SilicateCrystal: after_silicateCrystal,
+      PodTrees: after_podtreesystems,
+      PodSystems: after_podsystems
+      };
+
 
     // point cloud for all beforesystems - should be a low opacity blur
     before_allSystems.material.size = 2.0; // make points larger
@@ -420,20 +442,21 @@
           );
           
           scene.add(arrowX, arrowY, arrowZ);
-          // Master checkbox that looks the same as other checkboxes
-          addGroupToggle(null, 'Show Before State', true);
-          
-          // Subgroup checkboxes (reuse your existing arrays)
-          addGroupToggle(beforeMeshes.AllSystems.concat(afterMeshes.AllSystems), 'All Systems', false, 'AllSystems');
-          addGroupToggle(beforeMeshes.Criteria.concat(afterMeshes.Criteria), 'Criteria', false, 'Criteria');
-          addGroupToggle(beforeMeshes.IceCrystal.concat(afterMeshes.IceCrystal), 'Ice Crystals', false, 'IceCrystal');
-          addGroupToggle(beforeMeshes.SilicateCrystal.concat(afterMeshes.SilicateCrystal), 'Silicate Crystals', false, 'SilicateCrystal');
-          addGroupToggle(beforeMeshes.PodTrees.concat(afterMeshes.PodTrees), 'Pod Trees', false, 'PodTrees');
-          addGroupToggle(beforeMeshes.PodSystems.concat(afterMeshes.PodSystems), 'Pod Systems', false, 'PodSystems');
-          
-          // initialize visibility to match initial master checkbox state
-          updateVisibility();
-          
+        // master toggle (looks same as other checkboxes)
+        addGroupToggle(null, 'Show Before State', true);
+        
+        // subgroup toggles that control both before/after groups
+        addGroupToggle(beforeMeshes.AllSystems.concat(afterMeshes.AllSystems), 'All Systems', false, 'AllSystems');
+        addGroupToggle(beforeMeshes.Criteria.concat(afterMeshes.Criteria), 'Criteria', false, 'Criteria');
+        addGroupToggle(beforeMeshes.IceCrystal.concat(afterMeshes.IceCrystal), 'Ice Crystals', false, 'IceCrystal');
+        addGroupToggle(beforeMeshes.SilicateCrystal.concat(afterMeshes.SilicateCrystal), 'Silicate Crystals', false, 'SilicateCrystal');
+        addGroupToggle(beforeMeshes.PodTrees.concat(afterMeshes.PodTrees), 'Pod Trees', false, 'PodTrees');
+        addGroupToggle(beforeMeshes.PodSystems.concat(afterMeshes.PodSystems), 'Pod Systems', false, 'PodSystems');
+        
+        // initialize visibility once
+        updateVisibility();
+        
+                  
 
     
       // Add toggles for each defined group
