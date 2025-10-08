@@ -22,7 +22,35 @@
 
   const scene = new THREE.Scene();
   scene.background = new THREE.Color(0x111111);
-  scene.add(new THREE.AxesHelper(1000));
+  const axesHelper = new THREE.AxesHelper(1000);
+  axesHelper.name = "AxesHelper";
+  scene.add(axesHelper);
+  
+  // Create axis label sprites
+  function createAxisLabel(text, position, color = 0xffffff) {
+    const canvas = document.createElement('canvas');
+    const context = canvas.getContext('2d');
+    context.font = '24px sans-serif';
+    context.fillStyle = 'white';
+    context.fillText(text, 0, 24);
+  
+    const texture = new THREE.CanvasTexture(canvas);
+    const material = new THREE.SpriteMaterial({ map: texture, color });
+    const sprite = new THREE.Sprite(material);
+    sprite.position.copy(position);
+    sprite.scale.set(100, 50, 1);
+    return sprite;
+  }
+  
+  const labelX = createAxisLabel('X', new THREE.Vector3(1000, 0, 0));
+  const labelY = createAxisLabel('Y', new THREE.Vector3(0, 1000, 0));
+  const labelZ = createAxisLabel('Z', new THREE.Vector3(0, 0, 1000));
+  
+  scene.add(labelX);
+  scene.add(labelY);
+  scene.add(labelZ);
+  
+
 
   const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 10000);
   camera.position.set(0, 0, 1000);
@@ -180,12 +208,36 @@
       
       // Add toggles for each defined group
       addGroupToggle([pointCloud0], 'AllSystems');  
-      addGroupToggle([pointCloud1], 'Brown Dwarfs');  
+      addGroupToggle([pointCloud1], 'Meets criteria No NSP');  
       addGroupToggle(iceCrystal, 'Ice Crystal Group');
       addGroupToggle(silicateCrystal, 'Silicate Crystal Group');
       addGroupToggle(podtreesystems, 'Pod Tree Systems');
       addGroupToggle(podsystems, 'Pod Systems');
       addGroupToggle([sphereMesh], 'Minimum Sphere');
+      
+      const axesLabel = document.createElement('label');
+      axesLabel.style.display = 'block';
+      axesLabel.style.marginTop = '10px';
+      
+      const axesCheckbox = document.createElement('input');
+      axesCheckbox.type = 'checkbox';
+      axesCheckbox.checked = true;
+      axesCheckbox.style.marginRight = '6px';
+      
+      axesCheckbox.addEventListener('change', () => {
+        const visible = axesCheckbox.checked;
+        axesHelper.visible = visible;
+        labelX.visible = visible;
+        labelY.visible = visible;
+        labelZ.visible = visible;
+        console.log('Axes and labels visibility set to', visible);
+      });
+      
+      axesLabel.appendChild(axesCheckbox);
+      axesLabel.appendChild(document.createTextNode('Show Axes & Labels'));
+      ui.appendChild(axesLabel);
+
+
     
     // Opacity slider for mesh 13
     const opacityLabel = document.createElement('label');
@@ -215,11 +267,10 @@
         console.warn('Sphere mesh not yet available');
       }
     });
-
-
     ui.appendChild(opacityLabel);
     ui.appendChild(opacitySlider);
    
+        
     const box = new THREE.Box3().setFromObject(model);
     const size = box.getSize(new THREE.Vector3());
     const center = box.getCenter(new THREE.Vector3());
