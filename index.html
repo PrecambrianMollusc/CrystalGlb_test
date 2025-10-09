@@ -157,7 +157,7 @@
         if (child.name === 'mesh11' || child.name === 'mesh14' ) {before_silicateCrystal.push(child);}
         if (child.name === 'mesh15' || child.name === 'mesh17' || child.name === 'mesh19'|| child.name === 'mesh21'|| child.name === 'mesh22') {after_iceCrystal.push(child);}
         if (child.name === 'mesh16' || child.name === 'mesh18'|| child.name === 'mesh20'|| child.name === 'mesh23' ) {after_silicateCrystal.push(child);}
-        if (child.name === 'mesh24') sphereMesh = child;
+        if (child.name === 'mesh24') {sphereMesh.push(child);}
         
         console.log(`Mesh ${meshList.length - 1}:`, child.name || '(unnamed)', child);
       }
@@ -466,7 +466,7 @@
       bboxLabel.appendChild(document.createTextNode('Show Bounding Box & Labels'));
       ui.appendChild(bboxLabel);
               
-    // Opacity slider for mesh 13
+    // Opacity slider for sphere mesh
     const opacityLabel = document.createElement('label');
     opacityLabel.style.display = 'block';
     opacityLabel.style.marginTop = '10px';
