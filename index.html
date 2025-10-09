@@ -153,11 +153,11 @@
         if (child.name === 'mesh5' ) {before_podsystems.push(child);}
         if (child.name === 'mesh6' ) {after_podtreesystems.push(child);}
         if (child.name === 'mesh7' ) {after_podsystems.push(child);}
-        if (child.name === 'mesh8' || child.name === 'mesh9' || child.name === 'mesh10'|| child.name === 'mesh12'|| child.name === 'mesh13') {before_iceCrystal.push(child);}
-        if (child.name === 'mesh11' || child.name === 'mesh14' ) {before_silicateCrystal.push(child);}
-        if (child.name === 'mesh15' || child.name === 'mesh17' || child.name === 'mesh19'|| child.name === 'mesh21'|| child.name === 'mesh22') {after_iceCrystal.push(child);}
-        if (child.name === 'mesh16' || child.name === 'mesh18'|| child.name === 'mesh20'|| child.name === 'mesh23' ) {after_silicateCrystal.push(child);}
-        if (child.name === 'mesh24') {sphereMesh.push(child);}
+        if (child.name === 'mesh9' || child.name === 'mesh11' || child.name === 'mesh13'|| child.name === 'mesh14') {before_iceCrystal.push(child);}
+        if (child.name === 'mesh8' || child.name === 'mesh10'|| child.name === 'mesh12'|| child.name === 'mesh15' ) {before_silicateCrystal.push(child);}
+        if (child.name === 'mesh16' || child.name === 'mesh18' || child.name === 'mesh20'|| child.name === 'mesh22'|| child.name === 'mesh23'|| child.name === 'mesh23') {after_iceCrystal.push(child);}
+        if (child.name === 'mesh17' || child.name === 'mesh19'|| child.name === 'mesh21'|| child.name === 'mesh24' ) {after_silicateCrystal.push(child);}
+        if (child.name === 'mesh25') {sphereMesh.push(child);}
         
         console.log(`Mesh ${meshList.length - 1}:`, child.name || '(unnamed)', child);
       }
