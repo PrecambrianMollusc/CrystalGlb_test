@@ -500,8 +500,12 @@
     ui.appendChild(opacitySlider);
 
 function addTitleAndCreditsUI(initialTitle = 'Kepler Ridge Crystal Quest', initialCredits = `Survey Leader: SigmaExplorer
-CMDRs: Kailoren, Arizmulon, Neutron Tide, Shambaloid, MattG, Asentinn, Mooing, RKO Glyph, Precambrian Mollusc
-Credits: Data from Spansh, EDGALAXYdata.space and everyone who contributes data to the feed`) {
+CMDRs: 
+Kailoren, Arizmulon, Neutron Tide, Shambaloid, MattG, Asentinn, Mooing, RKO Glyph, Precambrian Mollusc
+
+Credits: 
+Data from Spansh, EDGALAXYdata.space
+everyone who contributes data to the feed`) {
   const metaWrap = document.createElement('div');
   metaWrap.style.marginTop = '12px';
   metaWrap.style.paddingTop = '8px';
@@ -539,7 +543,7 @@ Credits: Data from Spansh, EDGALAXYdata.space and everyone who contributes data 
 
   const creditsArea = document.createElement('textarea');
   creditsArea.value = initialCredits;
-  creditsArea.rows = 5;
+  creditsArea.rows = 10;
   creditsArea.style.width = '220px';
   creditsArea.style.padding = '6px';
   creditsArea.style.background = 'rgba(255,255,255,0.04)';
