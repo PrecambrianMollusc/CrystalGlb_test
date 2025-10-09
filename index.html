@@ -499,9 +499,9 @@
     ui.appendChild(opacityLabel);
     ui.appendChild(opacitySlider);
 
-// call this after ui exists (e.g., in buildUIAndInit())
-function addTitleAndCreditsUI(initialTitle = 'Kepler Ridge Crystal Quest', initialCredits = 'Survey Leader: SigmaExplorer\n CMDRs: Kailoren, Arizmulon, Neutron Tide, Shambaloid, MattG, Asentinn, Mooing, RKO Glyph, Precambrian Mollusc \n  ; Credits : Data from Spansh EDGALAXYdata.space and everyone who contributs data to the feed') {
-  // container
+function addTitleAndCreditsUI(initialTitle = 'Kepler Ridge Crystal Quest', initialCredits = `Survey Leader: SigmaExplorer
+CMDRs: Kailoren, Arizmulon, Neutron Tide, Shambaloid, MattG, Asentinn, Mooing, RKO Glyph, Precambrian Mollusc
+Credits: Data from Spansh, EDGALAXYdata.space and everyone who contributes data to the feed`) {
   const metaWrap = document.createElement('div');
   metaWrap.style.marginTop = '12px';
   metaWrap.style.paddingTop = '8px';
@@ -509,12 +509,11 @@ function addTitleAndCreditsUI(initialTitle = 'Kepler Ridge Crystal Quest', initi
   metaWrap.style.fontSize = '13px';
   metaWrap.id = 'metaWrap';
 
-  // title label + input
   const titleLabel = document.createElement('label');
   titleLabel.style.display = 'block';
   titleLabel.style.marginBottom = '6px';
   titleLabel.style.fontWeight = '600';
-  titleLabel.textContent = 'IGAU Survey Project';
+  titleLabel.textContent = 'IGAU Survey project';
   metaWrap.appendChild(titleLabel);
 
   const titleInput = document.createElement('input');
@@ -531,7 +530,6 @@ function addTitleAndCreditsUI(initialTitle = 'Kepler Ridge Crystal Quest', initi
   titleInput.id = 'vizTitleInput';
   metaWrap.appendChild(titleInput);
 
-  // credits label + textarea
   const creditsLabel = document.createElement('label');
   creditsLabel.style.display = 'block';
   creditsLabel.style.marginBottom = '6px';
@@ -541,7 +539,7 @@ function addTitleAndCreditsUI(initialTitle = 'Kepler Ridge Crystal Quest', initi
 
   const creditsArea = document.createElement('textarea');
   creditsArea.value = initialCredits;
-  creditsArea.rows = 4;
+  creditsArea.rows = 5;
   creditsArea.style.width = '220px';
   creditsArea.style.padding = '6px';
   creditsArea.style.background = 'rgba(255,255,255,0.04)';
@@ -552,7 +550,6 @@ function addTitleAndCreditsUI(initialTitle = 'Kepler Ridge Crystal Quest', initi
   creditsArea.id = 'vizCreditsArea';
   metaWrap.appendChild(creditsArea);
 
-  // show / hide button
   const btn = document.createElement('button');
   btn.textContent = 'Hide Info';
   btn.style.display = 'block';
@@ -565,36 +562,31 @@ function addTitleAndCreditsUI(initialTitle = 'Kepler Ridge Crystal Quest', initi
   btn.id = 'metaToggleBtn';
   metaWrap.appendChild(btn);
 
-  // title preview (optional small header shown when UI hidden)
   const preview = document.createElement('div');
   preview.style.marginTop = '8px';
   preview.style.fontSize = '14px';
   preview.style.fontWeight = '600';
-  preview.style.display = 'none'; // hidden while full UI shows
+  preview.style.display = 'none';
+  preview.style.whiteSpace = 'pre-wrap';
   preview.id = 'metaPreview';
   metaWrap.appendChild(preview);
 
-  // append to your ui container
   ui.appendChild(metaWrap);
 
-  // button behavior: toggle full UI (inputs + textarea) and show preview
   function updatePreview() {
-    const title = titleInput.value.trim();
+    const title = titleInput.value.trim() || 'Untitled Visualization';
     const credits = creditsArea.value.trim();
-    preview.textContent = title || 'Untitled Visualization';
-    preview.title = credits || '';
+    preview.textContent = `${title}\n\n${credits}`;
   }
 
   btn.addEventListener('click', () => {
-    const isHidden = titleInput.style.display === 'none';
-    if (isHidden) {
-      // show full editor
+    const hidden = titleInput.style.display === 'none';
+    if (hidden) {
       titleInput.style.display = 'block';
       creditsArea.style.display = 'block';
-      btn.textContent = 'Hide Info';
       preview.style.display = 'none';
+      btn.textContent = 'Hide Info';
     } else {
-      // hide editor, show compact preview
       titleInput.style.display = 'none';
       creditsArea.style.display = 'none';
       preview.style.display = 'block';
@@ -603,18 +595,14 @@ function addTitleAndCreditsUI(initialTitle = 'Kepler Ridge Crystal Quest', initi
     }
   });
 
-  // live update preview while editing
   titleInput.addEventListener('input', updatePreview);
   creditsArea.addEventListener('input', updatePreview);
-
-  // set initial preview
   updatePreview();
 
-  // return references if you want to programmatically read/write later
   return { metaWrap, titleInput, creditsArea, btn, preview };
 }
 
-// Example usage: call after buildUIAndInit() or after traversal
+// Usage (call after ui exists, e.g., inside buildUIAndInit)
 const metaControls = addTitleAndCreditsUI();
 
     
