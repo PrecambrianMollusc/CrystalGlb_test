@@ -500,7 +500,7 @@
     ui.appendChild(opacitySlider);
 
 // call this after ui exists (e.g., in buildUIAndInit())
-function addTitleAndCreditsUI(initialTitle = 'Kepler Ridge Crystal Survey', initialCredits = 'Data: Team Name; Processing: Jane Doe; Visualization: Your Team') {
+function addTitleAndCreditsUI(initialTitle = 'Kepler Ridge Crystal Quest', initialCredits = 'Survey Leader: SigmaExplorer\n CMDRs: Kailoren, Arizmulon, Neutron Tide, Shambaloid, MattG, Asentinn, Mooing, RKO Glyph, Precambrian Mollusc \n  ; Credits : Data from Spansh EDGALAXYdata.space and everyone who contributs data to the feed') {
   // container
   const metaWrap = document.createElement('div');
   metaWrap.style.marginTop = '12px';
@@ -514,7 +514,7 @@ function addTitleAndCreditsUI(initialTitle = 'Kepler Ridge Crystal Survey', init
   titleLabel.style.display = 'block';
   titleLabel.style.marginBottom = '6px';
   titleLabel.style.fontWeight = '600';
-  titleLabel.textContent = 'Visualization Title';
+  titleLabel.textContent = 'IGAU Survey Project';
   metaWrap.appendChild(titleLabel);
 
   const titleInput = document.createElement('input');
